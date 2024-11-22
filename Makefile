@@ -1,6 +1,6 @@
 CFLAGS = -g -O2 -Wall
 CC = gcc
-OBJS = build/main.o
+OBJS = build/grid.o build/main.o
 
 cudoku: $(OBJS)
 	$(CC) -o cudoku $(OBJS) -lncurses
