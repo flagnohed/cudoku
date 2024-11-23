@@ -17,7 +17,19 @@ int main() {
 
     read_grid (GAME_FILE, false);
     read_grid (ANSWER_FILE, true);
+   
     print_grids();    
+    printf("----------\n");    
+    Cell subset[ROW_LEN] = {};
+    
+    get_row(subset, 1);
+    print_subset(subset);
+    
+    get_col(subset, 1);
+    print_subset(subset);
+
+    get_box(subset, 1, 1);
+    print_subset(subset);
 
     return 0;
 }

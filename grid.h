@@ -10,7 +10,13 @@ typedef struct {
     bool is_constant;   /* True if cell not hidden at the start. */
 }   Cell;
 
+
+void get_row(Cell row[ROW_LEN], int r);
+void get_col(Cell col[ROW_LEN], int c);
+void get_box(Cell box[ROW_LEN], int r, int c);
+
 void print_grids();
 void read_grid (const char *fname, bool is_answer);
 
+void print_subset(Cell subset[ROW_LEN]);
 #endif
