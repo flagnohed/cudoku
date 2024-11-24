@@ -5,5 +5,9 @@ OBJS = build/grid.o build/main.o build/draw.o
 cudoku: $(OBJS)
 	$(CC) -o cudoku $(OBJS) -lncurses
 
-build/%.o: src/%.c
+build/%.o: %.c
 	$(CC) -c -o $@ $^ $(CFLAGS)
+
+clean:
+	rm build/*
+	rm cudoku

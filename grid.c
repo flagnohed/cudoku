@@ -7,6 +7,8 @@
 Cell cells[ROW_LEN][ROW_LEN] = {};
 Cell answer[ROW_LEN][ROW_LEN] = {};
 
+
+/* Reads a grid from file FNAME. */
 void read_grid(const char *fname, bool is_answer) {
     FILE *fp;
     char *line = NULL;
@@ -40,7 +42,62 @@ void read_grid(const char *fname, bool is_answer) {
 }
 
 
-/* Prints a row, column or box. */
+/* Returns the cell at the given coordinates. */
+static Cell *get_cell(int r, int c) {
+    return &cells[r][c];
+}
+
+
+/* Returns true if cell was given at the start. */
+bool is_constant(int r, int c) {
+    return get_cell(r, c)->is_constant;
+}
+
+
+/* Get the value of the cell at (R, C). */
+int get_value(int r, int c) {
+    return get_cell(r, c)->value;
+}
+
+
+/* Set VAL as value for the cell in (R, C). */
+void set_value(int val, int r, int c) {
+    get_cell(r, c)->value = val;
+}
+
+
+/* If we are moving vertically, and the new 
+ * cell is constant, figure out where the
+ * closest non-constant cell is horizontally. */
+int get_closest_non_const(int r, int c) {
+    int x = 0, l_delta = ROW_LEN, r_delta = ROW_LEN;
+    
+    if (!get_cell(r, c)->is_constant) {
+        return c;
+    }
+
+    for (x = c; x >= 0; x--) {
+        if (!get_cell(r, x)->is_constant) {
+            /* Found a non-const cell to the left. */
+            l_delta = c - x;
+            break;
+        }
+    }
+
+    for (x = c + 1; x < ROW_LEN; x++) {
+        if (!get_cell(r, x)->is_constant) {
+            /* Found a non-const cell to the right. */
+            r_delta = x - c;
+            break;
+        }
+    }
+    /* Adjust x with the smallest delta. */
+    x = r_delta >= l_delta ? c - l_delta : c + r_delta;
+    return x >= 0 && x < ROW_LEN ? x : c;
+}
+
+
+/* Prints a row, column or box (last two are printed as rows). */
 void print_subset(Cell subset[ROW_LEN]) {
     for (int i = 0; i < ROW_LEN; i++) {
         printf("%d", subset[i].value);
@@ -48,6 +105,8 @@ void print_subset(Cell subset[ROW_LEN]) {
     printf("\n");
 }
 
+
+/* Prints a given grid. */
 void print_grid(Cell grid[ROW_LEN][ROW_LEN]) {
     for (int r = 0; r < ROW_LEN; r++) {
         print_subset(grid[r]);
@@ -65,8 +124,11 @@ void print_grids() {
 
 
 /* Use [ROW_LEN] here instead of [BOX_LEN][BOX_LEN].
- * This is because it will be easier to traverse it. */
-void get_box(Cell box[ROW_LEN], int r, int c) {
+ * This is because it will be easier to traverse it.
+ * We can still access the coordinates for each cell
+ * since they keep track on it themselves.
+ */
+static void get_box(Cell box[ROW_LEN], int r, int c) {
     /* Figure out where the start of the current box is. */
     int start_r = r - r % 3;
     int start_c = c - c % 3;
@@ -82,7 +144,7 @@ void get_box(Cell box[ROW_LEN], int r, int c) {
 
 
 /* Gets row R from cells and puts it in ROW. */
-void get_row(Cell row[ROW_LEN], int r) {
+static void get_row(Cell row[ROW_LEN], int r) {
     for (int i = 0; i < ROW_LEN; i++) {
         row[i] = cells[r][i];
     }
@@ -90,20 +152,59 @@ void get_row(Cell row[ROW_LEN], int r) {
 
 
 /* Gets column C from cells and puts it in col. */
-void get_col(Cell col[ROW_LEN], int c) {
+static void get_col(Cell col[ROW_LEN], int c) {
     for (int i = 0; i < ROW_LEN; i++) {
         col[i] = cells[i][c];
     }
 }
 
 
+/* Checks if a Cell has value VALUE in a row, column or box. */
+static bool is_in_subset(int value, Cell subset[ROW_LEN]) {
+    for (int i = 0; i < ROW_LEN; i++) {
+        if (subset[i].value == value) {
+            return true;
+        } 
+    }
+    return false;
+}
+
+
+/* Checks if a value can be placed in a given spot,
+ * in terms of its environment (sudoku rules). */
+bool is_allowed(int value, int r, int c) {
+    Cell subset[ROW_LEN] = {};
+    get_row(subset, r);
+    if (is_in_subset(value, subset)) {
+        return false;
+    }
+    get_col(subset, c);
+    if (is_in_subset(value, subset)) {
+        return false;
+    }
+    get_box(subset, r, c);
+    if (is_in_subset(value, subset)) {
+        return false;
+    }
+    return true;
+}
+
+
+/* Checks if a CELL at (R, C) is correct. */
+static bool is_cell_correct(int r, int c) {
+    return get_cell(r, c)->value == answer[r][c].value;
+}
+
+
+/* Checks if CELLS equals ANSWER. */
 bool is_complete() {
     for (int i = 0; i < ROW_LEN; i++) {
         for (int j = 0; j < ROW_LEN; j++) {
-            if (cells[i][j].value != answer[i][j].value) {
+            if (is_cell_correct(i, j)) {
                 return false;
             }
         }
     }
     return true;
 }
+

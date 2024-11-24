@@ -1,0 +1,69 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+ANSWER_FILE	main.c	10;"	d	file:
+BOX_LEN	grid.h	4;"	d
+CC	Makefile	/^CC = gcc$/;"	m
+CFLAGS	Makefile	/^CFLAGS = -g -O2 -Wall$/;"	m
+CLEAR_LINE	draw.h	34;"	d
+COL_BOLD	draw.h	/^    COL_BOLD,$/;"	e	enum:__anon3
+COL_FCOL	draw.h	/^    COL_FCOL,$/;"	e	enum:__anon3
+COL_NFCOL	draw.h	/^    COL_NFCOL,$/;"	e	enum:__anon3
+COL_NORM	draw.h	/^    COL_NORM,$/;"	e	enum:__anon3
+COL_SOFT	draw.h	/^    COL_SOFT,$/;"	e	enum:__anon3
+Cell	grid.h	/^}   Cell;$/;"	t	typeref:struct:__anon1
+Color_t	draw.h	/^}   Color_t;$/;"	t	typeref:enum:__anon3
+DIR_DOWN	draw.h	/^    DIR_DOWN,$/;"	e	enum:__anon2
+DIR_LEFT	draw.h	/^    DIR_LEFT,$/;"	e	enum:__anon2
+DIR_RIGHT	draw.h	/^    DIR_RIGHT,$/;"	e	enum:__anon2
+DIR_UP	draw.h	/^    DIR_UP,$/;"	e	enum:__anon2
+DRAW_H_	draw.h	2;"	d
+Direction_t	draw.h	/^}   Direction_t;$/;"	t	typeref:enum:__anon2
+GAME_FILE	main.c	9;"	d	file:
+GRID_H_	grid.h	2;"	d
+KEY_CTRLC	draw.h	24;"	d
+KEY_DARR	draw.h	21;"	d
+KEY_LARR	draw.h	22;"	d
+KEY_RARR	draw.h	23;"	d
+KEY_UARR	draw.h	20;"	d
+MARGIN	draw.h	7;"	d
+MSG_POS	draw.h	10;"	d
+OBJS	Makefile	/^OBJS = build\/grid.o build\/main.o build\/draw.o$/;"	m
+OUTPUT_MSG	draw.h	46;"	d
+REFRESH_0	draw.h	40;"	d
+ROW_LEN	grid.h	5;"	d
+X	draw.h	5;"	d
+Y	draw.h	6;"	d
+answer	grid.c	/^Cell answer[ROW_LEN][ROW_LEN] = {};$/;"	v
+cells	grid.c	/^Cell cells[ROW_LEN][ROW_LEN] = {};$/;"	v
+cells2screen	draw.c	/^static void cells2screen(int *r, int *c) {$/;"	f	file:
+col	grid.h	/^    int row, col;$/;"	m	struct:__anon1
+draw_sudoku	draw.c	/^void draw_sudoku() {$/;"	f
+get_box	grid.c	/^static void get_box(Cell box[ROW_LEN], int r, int c) {$/;"	f	file:
+get_cell	grid.c	/^static Cell *get_cell(int r, int c) {$/;"	f	file:
+get_closest_non_const	grid.c	/^int get_closest_non_const(int r, int c) {$/;"	f
+get_col	grid.c	/^static void get_col(Cell col[ROW_LEN], int c) {$/;"	f	file:
+get_row	grid.c	/^static void get_row(Cell row[ROW_LEN], int r) {$/;"	f	file:
+get_value	grid.c	/^int get_value(int r, int c) {$/;"	f
+init_cursor	draw.c	/^void init_cursor(int *y, int *x) {$/;"	f
+is_allowed	grid.c	/^bool is_allowed(int value, int r, int c) {$/;"	f
+is_cell_correct	grid.c	/^static bool is_cell_correct(int r, int c) {$/;"	f	file:
+is_complete	grid.c	/^bool is_complete() {$/;"	f
+is_constant	grid.c	/^bool is_constant(int r, int c) {$/;"	f
+is_constant	grid.h	/^    bool is_constant;   \/* True if cell not hidden at the start. *\/$/;"	m	struct:__anon1
+is_in_subset	grid.c	/^static bool is_in_subset(int value, Cell subset[ROW_LEN]) {$/;"	f	file:
+main	main.c	/^int main(int argc, char **argv) {$/;"	f
+move_cursor	draw.c	/^void move_cursor(int *y, int *x, Direction_t dir) {$/;"	f
+print_grid	grid.c	/^void print_grid(Cell grid[ROW_LEN][ROW_LEN]) {$/;"	f
+print_grids	grid.c	/^void print_grids() {$/;"	f
+print_subset	grid.c	/^void print_subset(Cell subset[ROW_LEN]) {$/;"	f
+print_usage	main.c	/^void print_usage() {$/;"	f
+read_grid	grid.c	/^void read_grid(const char *fname, bool is_answer) {$/;"	f
+row	grid.h	/^    int row, col;$/;"	m	struct:__anon1
+screen2cells	draw.c	/^static void screen2cells(int *y, int *x) {$/;"	f	file:
+set_value	grid.c	/^void set_value(int val, int r, int c) {$/;"	f
+value	grid.h	/^    int value;$/;"	m	struct:__anon1
+write_cell	draw.c	/^void write_cell(int *y, int *x, int ch) {$/;"	f
