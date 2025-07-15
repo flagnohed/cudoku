@@ -9,5 +9,5 @@ build/%.o: %.c
 	$(CC) -c -o $@ $^ $(CFLAGS)
 
 clean:
-	rm build/*
-	rm cudoku
+	rm -f build/*
+	rm -f cudoku
