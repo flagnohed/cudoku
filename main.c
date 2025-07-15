@@ -19,14 +19,14 @@ void print_usage() {
 
 
 int main(int argc, char **argv) {
-    
+    int x, y, ch;
     const char *fname;
     if (argc == 1) {
         /* User did not give a sudoku file, so use the default one. */
         fname = &GAME_FILE[0];
     }
     else if (argc == 2) {
-        /* Assume this is an actual file name. read_grid() will 
+        /* Assume this is an actual file name. read_grid() will
          * complain if it's not. */
         fname = argv[1];
     }
@@ -45,18 +45,19 @@ int main(int argc, char **argv) {
     noecho();              /* Dont echo while we do getch. */
 
     /* Place our cursor at the first non-const cell. */
-    int x = 0, y = 0;
+    x = 0;
+    y = 0;
     init_cursor(&y, &x);
 
     /* Contains user pressed character. */
-    int ch = 0;
+    ch = 0;
 
     do {
-        draw_sudoku(); 
+        draw_sudoku();
         move(y, x);
         ch = tolower(getch());
         CLEAR_LINE(MSG_POS + 1);
-            
+
         switch(ch) {
             case '1':
             case '2':
@@ -87,6 +88,7 @@ int main(int argc, char **argv) {
                 break;
             case KEY_CTRLC:
                 ch = 'q';
+                break;
             default:
                 break;
         }
