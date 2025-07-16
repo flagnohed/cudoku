@@ -58,9 +58,16 @@ int get_value(int r, int c) {
 }
 
 
-/* Set VAL as value for the cell in (R, C). */
-void set_value(int val, int r, int c) {
-    get_cell(r, c)->value = val;
+/* Either set the value or note a value in the cell at (r, c).
+ * If we already have noted or set the value at this cell, we
+ * interpret it as a toggle, i.e., set it to 0 instead. */
+void set_value(int val, int r, int c, bool note) {
+    Cell *cell = get_cell(r, c);
+    if (note) {
+        cell->notes[val - 1] = (cell->notes[val - 1] ? 0 : val);
+        return;
+    }
+    cell->value = (cell->value ? 0 : val);
 }
 
 

@@ -2,7 +2,7 @@
 #include "grid.h"
 #include "draw.h"
 
-extern Cell cells[ROW_LEN][ROW_LEN]; 
+extern Cell cells[ROW_LEN][ROW_LEN];
 
 
 /* Convert CELLS indexes to screen coordinates. */
@@ -20,9 +20,9 @@ static void screen2cells(int *y, int *x) {
 
 
 /* Writes CH (value as char) at the correct position in CELLS.
- * We complain if CH is invalid or if we already have a 
+ * We complain if CH is invalid or if we already have a
  * constant value there (i.e. not user added). */
-void write_cell(int *y, int *x, int ch) {
+void write_cell(int *y, int *x, int ch, bool note) {
     int val, r, c;
     if (ch < '1' || ch > '9') {
         OUTPUT_MSG("Could not write char %c (%d) to cell.", ch, ch);
@@ -44,7 +44,7 @@ void write_cell(int *y, int *x, int ch) {
         OUTPUT_MSG("Writing %d at (%d, %d) would be a crime!", val, r, c);
         return;
     }
-    set_value(val, r, c);
+    set_value(val, r, c, note);
     cells2screen(&r, &c);
     *y = r;
     *x = c;
@@ -117,7 +117,7 @@ void init_cursor(int *y, int *x) {
 void draw_sudoku() {
     move(Y, X);
     for (int y = 0; y < ROW_LEN; y++) {
-        for (int x = 0; x < ROW_LEN; x++) 
+        for (int x = 0; x < ROW_LEN; x++)
             printw("+---");
 
         printw("+");
@@ -131,7 +131,7 @@ void draw_sudoku() {
         }
         move(Y + 2 * y + 2, X);
     }
-    for (int x = 0; x < ROW_LEN; x++) 
+    for (int x = 0; x < ROW_LEN; x++)
         printw("+---");
     printw("+");
     REFRESH_0();

@@ -12,29 +12,28 @@
 extern Cell cells[ROW_LEN][ROW_LEN];
 extern Cell answer[ROW_LEN][ROW_LEN];
 
-void print_usage() {
+void print_usage(int exit_code) {
     printf("Usage:\n");
     printf("./cudoku <file> (GAME_FILE if left blank)");
+    exit(exit_code);
 }
 
 
 int main(int argc, char **argv) {
     int x, y, ch;
     const char *fname;
-    if (argc == 1) {
+    bool note = false;  /* True if we are in note mode. */
+
+    if (argc == 1)
         /* User did not give a sudoku file, so use the default one. */
         fname = &GAME_FILE[0];
-    }
-    else if (argc == 2) {
+    else if (argc == 2)
         /* Assume this is an actual file name. read_grid() will
          * complain if it's not. */
         fname = argv[1];
-    }
-    else {
+    else
         /* This will change later when we add difficulties. */
-        print_usage();
-        exit(EXIT_FAILURE);
-    }
+        print_usage(EXIT_FAILURE);
 
     /* Fill CELLS and ANSWER. */
     read_grid (fname, false);
@@ -49,9 +48,7 @@ int main(int argc, char **argv) {
     y = 0;
     init_cursor(&y, &x);
 
-    /* Contains user pressed character. */
     ch = 0;
-
     do {
         draw_sudoku();
         move(y, x);
@@ -68,7 +65,11 @@ int main(int argc, char **argv) {
             case '7':
             case '8':
             case '9':
-                write_cell(&y, &x, ch);
+                write_cell(&y, &x, ch, note);
+                break;
+            case 'm':
+                /* Toggle note mode. */
+                note = !note;
                 break;
             case KEY_UARR:
             case 'k':
