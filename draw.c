@@ -1,6 +1,7 @@
 #include <ncurses.h>
 #include "grid.h"
 #include "draw.h"
+#include <stdlib.h>
 
 extern Cell cells[ROW_LEN][ROW_LEN];
 
@@ -36,13 +37,15 @@ void write_cell(int *y, int *x, int ch, bool note) {
         return;
     }
     val = ch - '0';
-    if (get_value(r, c) == val) {
-        /* It's already there stupid. */
+
+    if (!is_allowed(val, r, c)) {
+        // OUTPUT_MSG("Writing %d at (%d, %d) would be a crime!", val, r, c);
         return;
     }
-    if (!is_allowed(val, r, c)) {
-        OUTPUT_MSG("Writing %d at (%d, %d) would be a crime!", val, r, c);
-        return;
+    if (get_value(r, c) == val) {
+        /* Reentering the already existing value
+           is interpreted as erasing. */
+        val = 0;
     }
     set_value(val, r, c, note);
     cells2screen(&r, &c);
@@ -123,12 +126,16 @@ void draw_sudoku() {
         printw("+");
         move(Y + 2 * y + 1, X);
         for (int x = 0; x < ROW_LEN; x++) {
-            /* Leave cell blank if no value, else convert 
+            /* Leave cell blank if no value, else convert
                value to char. */
             int value = cells[y][x].value;
             value = (value == 0 ? ' ' : value + '0');
             printw("|");
+            if (cells[y][x].is_constant)
+                attron(A_BOLD);
             printw(" %c ", value);
+
+            attroff(A_BOLD);
         }
         printw("|");
         move(Y + 2 * y + 2, X);

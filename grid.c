@@ -180,14 +180,17 @@ bool is_allowed(int value, int r, int c) {
     Cell subset[ROW_LEN] = {};
     get_row(subset, r);
     if (is_in_subset(value, subset)) {
+        OUTPUT_MSG("Found %d in row %d\n", value, r);
         return false;
     }
     get_col(subset, c);
     if (is_in_subset(value, subset)) {
+        OUTPUT_MSG("Found %d in column %d\n", value, c);
         return false;
     }
     get_box(subset, r, c);
     if (is_in_subset(value, subset)) {
+        OUTPUT_MSG("Found %d in box containing index (%d, %d)\n", value, r, c);
         return false;
     }
     return true;
