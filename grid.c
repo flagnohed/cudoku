@@ -3,6 +3,7 @@
 #include <stdbool.h>
 
 #include "grid.h"
+#include <sys/types.h>
 
 Cell cells[ROW_LEN][ROW_LEN] = {};
 Cell answer[ROW_LEN][ROW_LEN] = {};
@@ -14,27 +15,25 @@ void read_grid(const char *fname, bool is_answer) {
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
-    int r, c;
+    int r = 0, c;
     fp = fopen(fname, "r");
     if (fp == NULL) {
         printf("Could not open %s.\n", fname);
         exit(EXIT_FAILURE);
     }
-    /* todo: make reading file safe */
     while ((read = getline(&line, &len, fp)) != -1) {
-        for (r = 0; r < ROW_LEN; r++) {
-            for (c = 0; c < ROW_LEN; c++) {
-                Cell cell;
-                cell.row = r;
-                cell.col = c;
-                cell.value = line[c] - '0';
-                cell.is_constant = cell.value != 0;
-                if (is_answer)
-                    answer[r][c] = cell;
-                else
-                    cells[r][c] = cell;
-            }
+        for (c = 0; c < ROW_LEN; c++) {
+            Cell cell;
+            cell.row = r;
+            cell.col = c;
+            cell.value = line[c] - '0';
+            cell.is_constant = cell.value != 0;
+            if (is_answer)
+                answer[r][c] = cell;
+            else
+                cells[r][c] = cell;
         }
+        r++;
     }
     fclose(fp);
 }

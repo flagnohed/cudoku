@@ -123,12 +123,14 @@ void draw_sudoku() {
         printw("+");
         move(Y + 2 * y + 1, X);
         for (int x = 0; x < ROW_LEN; x++) {
-            /* Leave cell blank if no value, else convert value to char. */
+            /* Leave cell blank if no value, else convert 
+               value to char. */
             int value = cells[y][x].value;
             value = (value == 0 ? ' ' : value + '0');
             printw("|");
             printw(" %c ", value);
         }
+        printw("|");
         move(Y + 2 * y + 2, X);
     }
     for (int x = 0; x < ROW_LEN; x++)
