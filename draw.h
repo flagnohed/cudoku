@@ -1,6 +1,8 @@
 #ifndef DRAW_H_
 #define DRAW_H_
 
+#include <stdbool.h>
+
 typedef enum {
     DIR_UP,
     DIR_DOWN,
