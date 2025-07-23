@@ -52,40 +52,47 @@ void move_cursor(int *y, int *x, Direction_t dir) {
     screen2cells(&r, &c);
     switch (dir) {
         case DIR_UP:
-            r -= r > 0 ? 1 : 0;
-            c = get_closest_non_const(r, c);
-            cells2screen(&r, &c);
-            *y = r;
-            *x = c;
-            break;
-        case DIR_DOWN:
-            r += r < ROW_LEN - 1 ? 1 : 0;
-            c = get_closest_non_const(r, c);
-            cells2screen(&r, &c);
-            *y = r;
-            *x = c;
+            for (i = r - 1; i >= 0; i--) {
+                if (is_constant(i, c))
+                    continue;
+                cells2screen(&i, &c);
+                *y = i;
+                *x = c;
+                break;
+            }
             break;
         case DIR_LEFT:
             for (i = c - 1; i >= 0; i--) {
-                if (!is_constant(r, i)) {
-                    cells2screen(&r, &i);
-                    *y = r;
-                    *x = i;
-                    break;
-                }
+                if (is_constant(r, i))
+                    continue;
+                cells2screen(&r, &i);
+                *y = r;
+                *x = i;
+                break;
+            }
+            break;
+        case DIR_DOWN:
+            for (i = r + 1; i < ROW_LEN; i++) {
+                if (is_constant(i, c))
+                    continue;
+                cells2screen(&i, &c);
+                *y = i;
+                *x = c;
+                break;
             }
             break;
         case DIR_RIGHT:
-            for (int i = c + 1; i < ROW_LEN; i++) {
-                if (!is_constant(r, i)) {
-                    cells2screen(&r, &i);
-                    *y = r;
-                    *x = i;
-                    break;
-                }
+            for (i = c + 1; i < ROW_LEN; i++) {
+                if (is_constant(r, i))
+                    continue;
+                cells2screen(&r, &i);
+                *y = r;
+                *x = i;
+                break;
             }
             break;
         default:
+            /* Should never happen! */
             OUTPUT_MSG("move_cursor: unknown direction %d", dir);
             break;
     }
