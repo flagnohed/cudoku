@@ -25,10 +25,6 @@ static void screen2cells(int *y, int *x) {
  * constant value there (i.e. not user added). */
 void write_cell(int *y, int *x, int ch, bool note) {
     int val, r, c;
-    if (ch < '1' || ch > '9') {
-        OUTPUT_MSG("Could not write char %c (%d) to cell.", ch, ch);
-        return;
-    }
     r = *y;
     c = *x;
     screen2cells(&r, &c);
@@ -38,10 +34,7 @@ void write_cell(int *y, int *x, int ch, bool note) {
     }
     val = ch - '0';
 
-    if (!is_allowed(val, r, c)) {
-        // OUTPUT_MSG("Writing %d at (%d, %d) would be a crime!", val, r, c);
-        return;
-    }
+    if (!is_allowed(val, r, c)) { return; }
     if (get_value(r, c) == val) {
         /* Reentering the already existing value
            is interpreted as erasing. */
