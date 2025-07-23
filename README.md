@@ -1,2 +1,3 @@
 # cudoku
-cudoku
+
+Usage: make && ./cudoku \[-h\]
