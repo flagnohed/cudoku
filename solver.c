@@ -1,6 +1,5 @@
-// #include "draw.h"  /* Needed for when we want to draw the solution. */
+#include "draw.h"  /* Needed for when we want to draw the solution. */
 #include "grid.h"
-// #include <stdio.h>
 
 
 typedef enum {
@@ -9,15 +8,28 @@ typedef enum {
     ROW,
 }   Subset_t;
 
+extern Cell cells[ROW_LEN][ROW_LEN];
+
+
+/* This function should only be called if all cells have been correctly noted.
+ * Returns true if the given cell only has a single note. */
+bool is_obvious_single(int r, int c) {
+    int i, count = 0;
+    for (i = 0; i < ROW_LEN; i++) {
+        /* Count the number of notes on this cell. */
+        if (cells[r][c].notes[i])
+            count++;
+    }
+    return count == 1;
+}
+
 
 /* For a subset, check if we have one single empty cell.
  * Returns 0 if no last free cell found, or value between 1-9
  * if found. */
 int last_free_cell(Cell subset[ROW_LEN]) {
-    int i, found_value;
+    int i, found_value, empty_cells = 0;
     int unseen[ROW_LEN] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-    int empty_cells = 0;
-
     for (i = 0; i < ROW_LEN; i++) {
         found_value = subset[i].value;
         if (found_value == 0)
