@@ -118,29 +118,31 @@ void init_cursor(int *y, int *x) {
 
 /* Uses ncurses to draw CELLS. */
 void draw_sudoku() {
+    int x, y;
+    char value;
     move(Y, X);
-    for (int y = 0; y < ROW_LEN; y++) {
-        for (int x = 0; x < ROW_LEN; x++)
+    for (y = 0; y < ROW_LEN; y++) {
+        for (x = 0; x < ROW_LEN; x++)
             printw("+---");
 
         printw("+");
         move(Y + 2 * y + 1, X);
-        for (int x = 0; x < ROW_LEN; x++) {
+        for (x = 0; x < ROW_LEN; x++) {
             /* Leave cell blank if no value, else convert
                value to char. */
-            int value = cells[y][x].value;
-            value = (value == 0 ? ' ' : value + '0');
+            value = (char) cells[y][x].value + '0';
+            if (value == '0')
+                value = ' ';  /* Don't print out 0 at the empty cells. */
             printw("|");
             if (cells[y][x].is_constant)
                 attron(A_BOLD);
             printw(" %c ", value);
-
             attroff(A_BOLD);
         }
         printw("|");
         move(Y + 2 * y + 2, X);
     }
-    for (int x = 0; x < ROW_LEN; x++)
+    for (x = 0; x < ROW_LEN; x++)
         printw("+---");
     printw("+");
     REFRESH_0();
