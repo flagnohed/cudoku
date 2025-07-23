@@ -103,7 +103,8 @@ int get_closest_non_const(int r, int c) {
 
 /* Prints a row, column or box (last two are printed as rows). */
 void print_subset(Cell subset[ROW_LEN]) {
-    for (int i = 0; i < ROW_LEN; i++) {
+    int i;
+    for (i = 0; i < ROW_LEN; i++) {
         printf("%d", subset[i].value);
     }
     printf("\n");
@@ -112,7 +113,8 @@ void print_subset(Cell subset[ROW_LEN]) {
 
 /* Prints a given grid. */
 void print_grid(Cell grid[ROW_LEN][ROW_LEN]) {
-    for (int r = 0; r < ROW_LEN; r++) {
+    int r;
+    for (r = 0; r < ROW_LEN; r++) {
         print_subset(grid[r]);
     }
 }
@@ -134,12 +136,10 @@ void print_grids() {
  */
 static void get_box(Cell box[ROW_LEN], int r, int c) {
     /* Figure out where the start of the current box is. */
-    int start_r = r - r % 3;
-    int start_c = c - c % 3;
-    int count = 0;
 
-    for (int i = start_r; i < start_r + 3; i++) {
-        for (int j = start_c; j < start_c + 3; j++) {
+    int start_r = r - r % 3, start_c = c - c % 3, count = 0, i, j;
+    for (i = start_r; i < start_r + 3; i++) {
+        for (j = start_c; j < start_c + 3; j++) {
             box[count] = cells[i][j];
             count++;
         }
@@ -149,7 +149,8 @@ static void get_box(Cell box[ROW_LEN], int r, int c) {
 
 /* Gets row R from cells and puts it in ROW. */
 static void get_row(Cell row[ROW_LEN], int r) {
-    for (int i = 0; i < ROW_LEN; i++) {
+    int i;
+    for (i = 0; i < ROW_LEN; i++) {
         row[i] = cells[r][i];
     }
 }
@@ -157,7 +158,8 @@ static void get_row(Cell row[ROW_LEN], int r) {
 
 /* Gets column C from cells and puts it in col. */
 static void get_col(Cell col[ROW_LEN], int c) {
-    for (int i = 0; i < ROW_LEN; i++) {
+    int i;
+    for (i = 0; i < ROW_LEN; i++) {
         col[i] = cells[i][c];
     }
 }
@@ -165,7 +167,8 @@ static void get_col(Cell col[ROW_LEN], int c) {
 
 /* Checks if a Cell has value VALUE in a row, column or box. */
 static bool is_in_subset(int value, Cell subset[ROW_LEN]) {
-    for (int i = 0; i < ROW_LEN; i++) {
+    int i;
+    for (i = 0; i < ROW_LEN; i++) {
         if (subset[i].value == value) {
             return true;
         }
@@ -205,8 +208,9 @@ static bool is_cell_correct(int r, int c) {
 
 /* Checks if CELLS equals ANSWER. */
 bool is_complete() {
-    for (int i = 0; i < ROW_LEN; i++) {
-        for (int j = 0; j < ROW_LEN; j++) {
+    int i, j;
+    for (i = 0; i < ROW_LEN; i++) {
+        for (j = 0; j < ROW_LEN; j++) {
             if (is_cell_correct(i, j))
                 return false;
         }
