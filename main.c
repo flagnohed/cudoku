@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <ncurses.h>
 #include <stdlib.h>
-#include <strings.h>
+#include <string.h>
 #include "grid.h"
 #include "draw.h"
 
@@ -14,7 +14,7 @@ extern Cell answer[ROW_LEN][ROW_LEN];
 
 void print_usage(int exit_code) {
     printf("Usage:\n");
-    printf("./cudoku <file> (GAME_FILE if left blank)");
+    printf("./cudoku <file> (GAME_FILE if left blank)\n");
     exit(exit_code);
 }
 
@@ -27,10 +27,14 @@ int main(int argc, char **argv) {
     if (argc == 1)
         /* User did not give a sudoku file, so use the default one. */
         fname = &GAME_FILE[0];
-    else if (argc == 2)
-        /* Assume this is an actual file name. read_grid() will
-         * complain if it's not. */
+    else if (argc == 2) {
+        if (strncmp(argv[1], "-h", 3) == 0)
+            print_usage(EXIT_SUCCESS);
+        /* If it is not a valid flag, we assume user supplied
+         * a file name. read_grid() will complain later otherwise,
+         * so this assumption is OK to make. */
         fname = argv[1];
+    }
     else
         /* This will change later when we add difficulties. */
         print_usage(EXIT_FAILURE);
