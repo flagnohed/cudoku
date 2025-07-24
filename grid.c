@@ -135,7 +135,7 @@ void print_grids() {
  * We can still access the coordinates for each cell
  * since they keep track on it themselves.
  */
-static void get_box(Cell box[ROW_LEN], int r, int c) {
+void get_box(Cell box[ROW_LEN], int r, int c) {
     /* Figure out where the start of the current box is. */
 
     int start_r = r - r % 3, start_c = c - c % 3, count = 0, i, j;
@@ -149,7 +149,7 @@ static void get_box(Cell box[ROW_LEN], int r, int c) {
 
 
 /* Gets row R from cells and puts it in ROW. */
-static void get_row(Cell row[ROW_LEN], int r) {
+void get_row(Cell row[ROW_LEN], int r) {
     int i;
     for (i = 0; i < ROW_LEN; i++) {
         row[i] = cells[r][i];
@@ -158,7 +158,7 @@ static void get_row(Cell row[ROW_LEN], int r) {
 
 
 /* Gets column C from cells and puts it in col. */
-static void get_col(Cell col[ROW_LEN], int c) {
+void get_col(Cell col[ROW_LEN], int c) {
     int i;
     for (i = 0; i < ROW_LEN; i++) {
         col[i] = cells[i][c];
@@ -167,7 +167,7 @@ static void get_col(Cell col[ROW_LEN], int c) {
 
 
 /* Checks if a Cell has value VALUE in a row, column or box. */
-static bool is_in_subset(int value, Cell subset[ROW_LEN]) {
+bool is_in_subset(int value, Cell subset[ROW_LEN]) {
     int i;
     for (i = 0; i < ROW_LEN; i++) {
         if (subset[i].value == value) {
