@@ -91,34 +91,48 @@ void init_cursor(int *y, int *x) {
 }
 
 
-/* Uses ncurses to draw CELLS. */
+/* Uses ncurses to draw CELLS. Using bold text to print
+ * out the 9 in the grid (1 box = 3x3 cells). */
 void draw_sudoku() {
     int x, y;
     char value;
     move(Y, X);
     for (y = 0; y < ROW_LEN; y++) {
+
+        if (y % 3 == 0)
+            attron(A_BOLD);
         for (x = 0; x < ROW_LEN; x++)
             printw("+---");
-
         printw("+");
+
+        /* Top border done, now move down to values. */
         move(Y + 2 * y + 1, X);
+        attroff(A_BOLD);
+
         for (x = 0; x < ROW_LEN; x++) {
-            /* Leave cell blank if no value, else convert
-               value to char. */
+            if (x % 3 == 0)
+                attron(A_BOLD);
+            printw("|");
+            attroff(A_BOLD);
             value = (char) cells[y][x].value + '0';
             if (value == '0')
-                value = ' ';  /* Don't print out 0 at the empty cells. */
-            printw("|");
+                /* Don't print out 0 at the empty cells. */
+                value = ' ';
+
             if (cells[y][x].is_constant)
                 attron(A_BOLD);
             printw(" %c ", value);
+
             attroff(A_BOLD);
         }
+        attron(A_BOLD);
         printw("|");
         move(Y + 2 * y + 2, X);
+        attroff(A_BOLD);
     }
     for (x = 0; x < ROW_LEN; x++)
         printw("+---");
     printw("+");
+    attroff(A_BOLD);
     REFRESH_0();
 }
