@@ -63,6 +63,7 @@ int get_value(int r, int c) {
 void set_value(int val, int r, int c, bool note) {
     Cell *cell = get_cell(r, c);
     if (note) {
+        /* Note value at current cell, or remove the note it value is reentered. */
         cell->notes[val - 1] = (cell->notes[val - 1] ? 0 : val);
         return;
     }
