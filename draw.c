@@ -48,54 +48,29 @@ void write_cell(int *y, int *x, int ch, bool note) {
 
 
 void move_cursor(int *y, int *x, Direction_t dir) {
-    int r = *y, c = *x, i;
+    int r = *y, c = *x;
     screen2cells(&r, &c);
     switch (dir) {
         case DIR_UP:
-            for (i = r - 1; i >= 0; i--) {
-                if (is_constant(i, c))
-                    continue;
-                cells2screen(&i, &c);
-                *y = i;
-                *x = c;
-                break;
-            }
+            r -= (r > 0 ? 1 : 0);
             break;
         case DIR_LEFT:
-            for (i = c - 1; i >= 0; i--) {
-                if (is_constant(r, i))
-                    continue;
-                cells2screen(&r, &i);
-                *y = r;
-                *x = i;
-                break;
-            }
+            c -= (c > 0 ? 1 : 0);
             break;
         case DIR_DOWN:
-            for (i = r + 1; i < ROW_LEN; i++) {
-                if (is_constant(i, c))
-                    continue;
-                cells2screen(&i, &c);
-                *y = i;
-                *x = c;
-                break;
-            }
+            r += (r < ROW_LEN - 1 ? 1 : 0);
             break;
         case DIR_RIGHT:
-            for (i = c + 1; i < ROW_LEN; i++) {
-                if (is_constant(r, i))
-                    continue;
-                cells2screen(&r, &i);
-                *y = r;
-                *x = i;
-                break;
-            }
+            c += (c < ROW_LEN - 1 ? 1 : 0);
             break;
         default:
             /* Should never happen! */
             OUTPUT_MSG("move_cursor: unknown direction %d", dir);
-            break;
+            exit(EXIT_FAILURE);
     }
+    cells2screen(&r, &c);
+    *y = r;
+    *x = c;
 }
 
 
