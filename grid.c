@@ -39,66 +39,20 @@ void read_grid(const char *fname, bool is_answer) {
 }
 
 
-/* Returns the cell at the given coordinates. */
-static Cell *get_cell(int r, int c) {
-    return &cells[r][c];
-}
-
-
-/* Returns true if cell was given at the start. */
-bool is_constant(int r, int c) {
-    return get_cell(r, c)->is_constant;
-}
-
-
-/* Get the value of the cell at (R, C). */
-int get_value(int r, int c) {
-    return get_cell(r, c)->value;
-}
-
-
 /* Either set the value or note a value in the cell at (r, c).
  * If we already have noted or set the value at this cell, we
  * interpret it as a toggle, i.e., set it to 0 instead. */
 void set_value(int val, int r, int c, bool note) {
-    Cell *cell = get_cell(r, c);
+    Cell *cell = &cells[r][c];
     if (note) {
         /* Note value at current cell, or remove the note it value is reentered. */
+        OUTPUT_MSG("Note mode is on!")
         cell->notes[val - 1] = (cell->notes[val - 1] ? 0 : val);
         return;
     }
-    cell->value = (cell->value ? 0 : val);
-}
+    /* Erasing by reentering value is handled earlier in the call chain. */
+    cell->value = val;
 
-
-/* If we are moving vertically, and the new
- * cell is constant, figure out where the
- * closest non-constant cell is horizontally. */
-int get_closest_non_const(int r, int c) {
-    int x = 0, l_delta = ROW_LEN, r_delta = ROW_LEN;
-
-    if (!get_cell(r, c)->is_constant) {
-        return c;
-    }
-
-    for (x = c; x >= 0; x--) {
-        if (!get_cell(r, x)->is_constant) {
-            /* Found a non-const cell to the left. */
-            l_delta = c - x;
-            break;
-        }
-    }
-
-    for (x = c + 1; x < ROW_LEN; x++) {
-        if (!get_cell(r, x)->is_constant) {
-            /* Found a non-const cell to the right. */
-            r_delta = x - c;
-            break;
-        }
-    }
-    /* Adjust x with the smallest delta. */
-    x = r_delta >= l_delta ? c - l_delta : c + r_delta;
-    return x >= 0 && x < ROW_LEN ? x : c;
 }
 
 
@@ -203,7 +157,7 @@ bool is_allowed(int value, int r, int c) {
 
 /* Checks if a CELL at (R, C) is correct. */
 static bool is_cell_correct(int r, int c) {
-    return get_cell(r, c)->value == answer[r][c].value;
+    return cells[r][c].value == answer[r][c].value;
 }
 
 

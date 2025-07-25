@@ -1,7 +1,7 @@
 #include <ncurses.h>
+#include <stdlib.h>
 #include "grid.h"
 #include "draw.h"
-#include <stdlib.h>
 
 extern Cell cells[ROW_LEN][ROW_LEN];
 
@@ -28,18 +28,23 @@ void write_cell(int *y, int *x, int ch, bool note) {
     r = *y;
     c = *x;
     screen2cells(&r, &c);
-    if (is_constant(r, c)) {
+    Cell *cell = &cells[r][c];
+    if (cell->is_constant) {
         OUTPUT_MSG("Cell is constant.");
         return;
     }
     val = ch - '0';
 
-    if (!is_allowed(val, r, c)) { return; }
-    if (get_value(r, c) == val) {
+    if (cell->value == val) {
         /* Reentering the already existing value
            is interpreted as erasing. */
         val = 0;
+        OUTPUT_MSG("Cell value already there, erasing instead.")
     }
+    else if (!is_allowed(val, r, c)) {
+        return;
+    }
+
     set_value(val, r, c, note);
     cells2screen(&r, &c);
     *y = r;
@@ -78,7 +83,7 @@ void init_cursor(int *y, int *x) {
     int r, c;
     for (r = 0; r < ROW_LEN; r++) {
         for (c = 0; c < ROW_LEN; c++) {
-            if (!is_constant(r, c)) {
+            if (!cells[r][c].is_constant) {
                 cells2screen(&r, &c);
                 *y = r;
                 *x = c;
@@ -97,6 +102,8 @@ void draw_sudoku() {
     int x, y;
     char value;
     move(Y, X);
+    Cell *cell;
+
     for (y = 0; y < ROW_LEN; y++) {
 
         if (y % 3 == 0)
@@ -110,16 +117,17 @@ void draw_sudoku() {
         attroff(A_BOLD);
 
         for (x = 0; x < ROW_LEN; x++) {
+            cell = &cells[y][x];
             if (x % 3 == 0)
                 attron(A_BOLD);
             printw("|");
             attroff(A_BOLD);
-            value = (char) cells[y][x].value + '0';
+            value = (char) cell->value + '0';
             if (value == '0')
                 /* Don't print out 0 at the empty cells. */
                 value = ' ';
 
-            if (cells[y][x].is_constant)
+            if (cell->is_constant)
                 attron(A_BOLD);
             printw(" %c ", value);
 
