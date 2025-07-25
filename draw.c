@@ -98,23 +98,6 @@ void move_cursor(int *y, int *x, Direction_t dir) {
 }
 
 
-void init_cursor(int *y, int *x) {
-    int r, c;
-    for (r = 0; r < ROW_LEN; r++) {
-        for (c = 0; c < ROW_LEN; c++) {
-            if (!cells[r][c].is_constant) {
-                cells2screen(&r, &c);
-                *y = r;
-                *x = c;
-                return;
-            }
-        }
-    }
-    *y = 0;
-    *x = 0;
-}
-
-
 /* Uses ncurses to draw CELLS. Using bold text to print
  * out the 9 in the grid (1 box = 3x3 cells). */
 void draw_sudoku() {

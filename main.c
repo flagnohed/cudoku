@@ -47,12 +47,10 @@ int main(int argc, char **argv) {
     keypad(stdscr, TRUE);  /* F1, F2, arrow keys, ... */
     noecho();              /* Dont echo while we do getch. */
 
-    /* Place our cursor at the first non-const cell. */
     x = 0;
     y = 0;
-    init_cursor(&y, &x);
-
     ch = 0;
+
     do {
         draw_sudoku();
         move(y, x);
