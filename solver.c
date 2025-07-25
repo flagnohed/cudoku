@@ -53,11 +53,11 @@ int last_free_cell(Cell subset[ROW_LEN]) {
 /* For the given coordinates, determine if there is only one possible value
  * that can go here. Returns that value if possible, else 0. */
 int last_remaining_cell(int r, int c) {
-    int count = 0, last_value, i;
-    for (i = 0; i < ROW_LEN; i++) {
-        if (is_allowed(i, r, c)) {
+    int count = 0, last_value, v;
+    for (v = 1; v < 10; v++) {
+        if (is_allowed(v, r, c)) {
             count++;
-            last_value = i;
+            last_value = v;
         }
     }
     return (count == 1 ? last_value : 0);
@@ -66,10 +66,10 @@ int last_remaining_cell(int r, int c) {
 
 /* Note all possible values of this cell. */
 void note_possible_values(int r, int c) {
-    int val;
-    for (val = 1; val < ROW_LEN; val++) {
-        if (is_allowed(val, r, c)) {
-            set_value(val, r, c, true);
+    int v;
+    for (v = 1; v < 10; v++) {
+        if (is_allowed(v, r, c)) {
+            set_value(v, r, c, true);
         }
     }
 }
@@ -80,6 +80,7 @@ void solve() {
     for (r = 0; r < ROW_LEN; r++) {
         for (c = 0; c < ROW_LEN; c++) {
             note_possible_values(r, c);
+
         }
     }
 }
