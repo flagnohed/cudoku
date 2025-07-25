@@ -1,5 +1,6 @@
 #include <ncurses.h>
 #include <stdlib.h>
+#include <string.h>
 #include "grid.h"
 #include "draw.h"
 
@@ -52,6 +53,23 @@ void write_cell(int *y, int *x, int ch, bool note) {
 }
 
 
+/* Output all the notes for the current cell. */
+void show_notes(int r, int c) {
+    /* "Notes: " + "x, " * 9 + \0 = 7 + 27 + 1 = 35. */
+    char note_str[35], tmp_str[4];
+    int note_idx, cur_note;
+    sprintf(note_str, "Notes: ");
+    for (note_idx = 0; note_idx < ROW_LEN - 1; note_idx++) {
+        cur_note = cells[r][c].notes[note_idx];
+        if (cur_note) {
+            sprintf(tmp_str, "%d, ", cur_note);
+            strncat(note_str, tmp_str, 4);
+        }
+    }
+    OUTPUT_MSG("%s", note_str);
+}
+
+
 void move_cursor(int *y, int *x, Direction_t dir) {
     int r = *y, c = *x;
     screen2cells(&r, &c);
@@ -73,6 +91,7 @@ void move_cursor(int *y, int *x, Direction_t dir) {
             OUTPUT_MSG("move_cursor: unknown direction %d", dir);
             exit(EXIT_FAILURE);
     }
+    show_notes(r, c);
     cells2screen(&r, &c);
     *y = r;
     *x = c;
