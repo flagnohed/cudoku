@@ -2,6 +2,9 @@
 #include "grid.h"
 
 
+#define MAX_VAL 9
+
+
 typedef enum {
     BOX,
     COLUMN,
@@ -54,7 +57,7 @@ int last_free_cell(Cell subset[ROW_LEN]) {
  * that can go here. Returns that value if possible, else 0. */
 int last_remaining_cell(int r, int c) {
     int count = 0, last_value, v;
-    for (v = 1; v < 10; v++) {
+    for (v = 1; v <= MAX_VAL; v++) {
         if (is_allowed(v, r, c)) {
             count++;
             last_value = v;
@@ -67,7 +70,7 @@ int last_remaining_cell(int r, int c) {
 /* Note all possible values of this cell. */
 void note_possible_values(int r, int c) {
     int v;
-    for (v = 1; v < 10; v++) {
+    for (v = 1; v <= MAX_VAL; v++) {
         if (is_allowed(v, r, c)) {
             set_value(v, r, c, true);
         }
@@ -76,11 +79,15 @@ void note_possible_values(int r, int c) {
 
 /* Main solver function. */
 void solve() {
-    int r, c;
+    int r, c, v;
     for (r = 0; r < ROW_LEN; r++) {
         for (c = 0; c < ROW_LEN; c++) {
             note_possible_values(r, c);
-
+            if ((v = last_remaining_cell(r, c))) {
+                /* Can only be v for this cell, so we are done here! */
+                write_cell(&r, &c, v + '0', false);
+                continue;
+            }
         }
     }
 }
