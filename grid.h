@@ -45,7 +45,7 @@ bool is_allowed(int value, int r, int c);
 bool is_constant(int r, int c);
 void read_grid (const char *fname, bool is_answer);
 void set_value(int val, int r, int c, bool note);
-void print_grids();
+void print_grid();
 void print_subset(Cell subset[ROW_LEN]);
 
 
