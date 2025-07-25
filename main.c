@@ -3,8 +3,10 @@
 #include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>
-#include "grid.h"
+
 #include "draw.h"
+#include "grid.h"
+#include "solver.h"
 
 #define GAME_FILE "sudokus/sudoku1.txt"
 #define ANSWER_FILE "sudokus/sudoku1-solved.txt"
@@ -22,23 +24,29 @@ void print_usage(int exit_code) {
 int main(int argc, char **argv) {
     int x, y, ch;
     const char *fname;
-    bool note = false;  /* True if we are in note mode. */
+    bool solve_mode = false, note_mode = false;
 
-    if (argc == 1)
+    if (argc == 1) {
         /* User did not give a sudoku file, so use the default one. */
         fname = &GAME_FILE[0];
+    }
     else if (argc == 2) {
-        if (strncmp(argv[1], "-h", 3) == 0)
+        /* User either supplied file name or a flag. */
+        if (strncmp(argv[1], "-h", 3) == 0) {
             print_usage(EXIT_SUCCESS);
+        }
+        else if (strncmp(argv[1], "-s", 3) == 0) {
+            solve_mode = true;
+        }
         /* If it is not a valid flag, we assume user supplied
          * a file name. read_grid() will complain later otherwise,
          * so this assumption is OK to make. */
         fname = argv[1];
     }
-    else
+    else {
         /* This will change later when we add difficulties. */
         print_usage(EXIT_FAILURE);
-
+    }
     /* Fill CELLS and ANSWER. */
     read_grid (fname, false);
     read_grid (ANSWER_FILE, true);
@@ -67,11 +75,11 @@ int main(int argc, char **argv) {
             case '7':
             case '8':
             case '9':
-                write_cell(&y, &x, ch, note);
+                write_cell(&y, &x, ch, note_mode);
                 break;
             case 'm':
                 /* Toggle note mode. */
-                note = !note;
+                note_mode = !note_mode;
                 break;
             case KEY_UARR:
             case 'k':
