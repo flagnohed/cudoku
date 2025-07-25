@@ -62,3 +62,24 @@ int last_remaining_cell(int r, int c) {
     }
     return (count == 1 ? last_value : 0);
 }
+
+
+/* Note all possible values of this cell. */
+void note_possible_values(int r, int c) {
+    int val;
+    for (val = 1; val < ROW_LEN; val++) {
+        if (is_allowed(val, r, c)) {
+            set_value(val, r, c, true);
+        }
+    }
+}
+
+/* Main solver function. */
+void solve() {
+    int r, c;
+    for (r = 0; r < ROW_LEN; r++) {
+        for (c = 0; c < ROW_LEN; c++) {
+            note_possible_values(r, c);
+        }
+    }
+}
