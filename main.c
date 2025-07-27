@@ -8,44 +8,58 @@
 #include "grid.h"
 #include "solver.h"
 
-#define GAME_FILE "sudokus/sudoku1.txt"
-#define ANSWER_FILE "sudokus/sudoku1-solved.txt"
+#define GAME_DIR "sudokus/"
+#define GAME_FILE GAME_DIR "sudoku1.txt"
+#define ANSWER_FILE GAME_DIR "sudoku1-solved.txt"
 
 extern Cell cells[ROW_LEN][ROW_LEN];
 extern Cell answer[ROW_LEN][ROW_LEN];
 
-void print_usage(int exit_code) {
+void print_usage() {
     printf("Usage:\n");
-    printf("./cudoku <file> (GAME_FILE if left blank)\n");
-    exit(exit_code);
+    printf("./cudoku -[h|s] [FILE]\n");
+    printf("    -h : prints this info and exits.\n");
+    printf("    -s : solver mode. \n");
+    printf("    FILE : sudoku game file. Should be placed in %s\n", GAME_DIR);
 }
 
 
 int main(int argc, char **argv) {
     int x, y, ch;
     const char *fname;
-    bool solve_mode = false, note_mode = false;
-
-    if (argc == 1) {
+    bool solver_mode = false, note_mode = false;
+    switch (argc) {
+    case 1:
         /* User did not give a sudoku file, so use the default one. */
         fname = &GAME_FILE[0];
-    }
-    else if (argc == 2) {
+        break;
+    case 2:
         /* User either supplied file name or a flag. */
         if (strncmp(argv[1], "-h", 3) == 0) {
-            print_usage(EXIT_SUCCESS);
+            print_usage();
+            return EXIT_SUCCESS;
         }
         else if (strncmp(argv[1], "-s", 3) == 0) {
-            solve_mode = true;
+            solver_mode = true;
+            fname = &GAME_FILE[0];
+            break;
         }
         /* If it is not a valid flag, we assume user supplied
-         * a file name. read_grid() will complain later otherwise,
-         * so this assumption is OK to make. */
+        * a file name. read_grid() will complain later otherwise,
+        * so this assumption is OK to make. */
         fname = argv[1];
-    }
-    else {
+        break;
+    case 3:
+        if (strncmp(argv[1], "-s", 3) == 0) {
+            solver_mode = true;
+            fname = argv[2];
+            break;
+        }
+        /* Intentional fall-through. */
+    default:
         /* This will change later when we add difficulties. */
-        print_usage(EXIT_FAILURE);
+        print_usage();
+        return EXIT_FAILURE;
     }
     /* Fill CELLS and ANSWER. */
     read_grid (fname, false);
@@ -58,6 +72,10 @@ int main(int argc, char **argv) {
     x = 0;
     y = 0;
     ch = 0;
+
+    if (solver_mode) {
+        solve();
+    }
 
     do {
         draw_sudoku();
@@ -106,5 +124,5 @@ int main(int argc, char **argv) {
     }   while (ch != 'q');
 
     endwin();
-    return 0;
+    return EXIT_SUCCESS;
 }
