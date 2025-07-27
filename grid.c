@@ -121,10 +121,15 @@ void get_col(Cell col[ROW_LEN], int c) {
 
 
 /* Checks if a Cell has value VALUE in a row, column or box. */
-bool is_in_subset(int value, Cell subset[ROW_LEN]) {
+bool is_in_subset(int value, Cell subset[ROW_LEN], bool note) {
     int i;
     for (i = 0; i < ROW_LEN; i++) {
-        if (subset[i].value == value) {
+        if (!note && subset[i].value == value) {
+            return true;
+        }
+        /* Used by solver to see if any cells contains a certain note
+         * which then ought to be removed. */
+        if (subset[i].notes[value - 1]) {
             return true;
         }
     }
@@ -137,17 +142,17 @@ bool is_in_subset(int value, Cell subset[ROW_LEN]) {
 bool is_allowed(int value, int r, int c) {
     Cell subset[ROW_LEN] = {};
     get_row(subset, r);
-    if (is_in_subset(value, subset)) {
+    if (is_in_subset(value, subset, false)) {
         OUTPUT_MSG("Found %d in row %d\n", value, r);
         return false;
     }
     get_col(subset, c);
-    if (is_in_subset(value, subset)) {
+    if (is_in_subset(value, subset, false)) {
         OUTPUT_MSG("Found %d in column %d\n", value, c);
         return false;
     }
     get_box(subset, r, c);
-    if (is_in_subset(value, subset)) {
+    if (is_in_subset(value, subset, false)) {
         OUTPUT_MSG("Found %d in box containing index (%d, %d)\n", value, r, c);
         return false;
     }
