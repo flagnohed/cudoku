@@ -77,7 +77,35 @@ void note_possible_values(int r, int c) {
     }
 }
 
-/* Main solver function. */
+
+/* This function does not use get_{row, col, box}
+ * because those helper functions give copies of that subset.
+ * In this solver specific function we need to manipulate
+ * these places in the actual cells grid.
+ * @todo: use pointers in get_* ? */
+void remove_notes(int v, int r, int c) {
+    int i, *note;
+    /* First check notes in the same row and column. */
+    for (i = 0; i < ROW_LEN; i++) {
+        if ((note = &cells[r][i].notes[v - 1])) {
+            *note = 0;
+        }
+        if ((note = &cells[i][c].notes[v - 1])) {
+            *note = 0;
+        }
+    }
+}
+
+/* Writes v as cell value and removes any lingering notes
+ * on the same row, column or box. */
+void solve_cell(int v, int r, int c) {
+    Cell subset[ROW_LEN];
+    write_cell(&r, &c, v + '0', false);
+
+}
+
+
+/* Main solver function.  */
 void solve() {
     int r, c, v;
     for (r = 0; r < ROW_LEN; r++) {
@@ -85,7 +113,7 @@ void solve() {
             note_possible_values(r, c);
             if ((v = last_remaining_cell(r, c))) {
                 /* Can only be v for this cell, so we are done here! */
-                write_cell(&r, &c, v + '0', false);
+                solve_cell(v, r, c);
                 continue;
             }
         }
