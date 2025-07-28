@@ -106,13 +106,7 @@ void remove_notes(int v, int r, int c) {
 /* Writes v as cell value and removes any lingering notes
  * on the same row, column or box. */
 void solve_cell(int v, int r, int c) {
-    /* Since we use write_cell, which expects screen coordinates as input,
-     * we need to convert our cell coordinates to screen coordinates. */
-    int y = r, x = c;
-    cells2screen(&y, &x);
-    write_cell(&y, &x, v + '0', false);
-    /* remove_notes is not expecting screen coordinates, so we are
-     * back to using regular r and c. */
+    write_cell(r, c, v + '0', false);
     remove_notes(v, r, c);
 }
 
