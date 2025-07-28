@@ -44,4 +44,5 @@ void cells2screen(int *r, int *c);
 void screen2cells(int *y, int *x);
 void write_cell(int r, int c, int ch, bool note);
 void get_box(Cell *box[ROW_LEN], int r, int c);
+bool is_complete();
 #endif

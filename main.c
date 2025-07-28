@@ -74,36 +74,48 @@ void move_cursor(int *r, int *c, Direction_t dir) {
 void draw_sudoku() {
     int x, y;
     char value;
-    move(Y, X);
     Cell *cell;
+    move(Y, X);
 
     for (y = 0; y < ROW_LEN; y++) {
-
-        if (y % BOX_LEN == 0)
+        if (y % BOX_LEN == 0) {
             attron(A_BOLD);
-        for (x = 0; x < ROW_LEN; x++)
+        }
+        for (x = 0; x < ROW_LEN; x++) {
+            if (y % BOX_LEN && x % BOX_LEN == 0) {
+                /* This plus will indicate a corner of a box, so bold
+                 * font should be applied even though y says we shouldn't. */
+                attron(A_BOLD);
+                printw("+");
+                attroff(A_BOLD);
+                printw("---");
+                continue;
+            }
             printw("+---");
+        }
+        /* Last plus will always indicate corner of a box, so it must be bold. */
+        attron(A_BOLD);
         printw("+");
+        attroff(A_BOLD);
 
         /* Top border done, now move down to values. */
         move(Y + 2 * y + 1, X);
-        attroff(A_BOLD);
-
         for (x = 0; x < ROW_LEN; x++) {
             cell = &cells[y][x];
-            if (x % BOX_LEN == 0)
+            if (x % BOX_LEN == 0) {
                 attron(A_BOLD);
+            }
             printw("|");
             attroff(A_BOLD);
             value = (char) cell->value + '0';
-            if (value == '0')
+            if (value == '0') {
                 /* Don't print out 0 at the empty cells. */
                 value = ' ';
-
-            if (cell->is_constant)
+            }
+            if (cell->is_constant) {
                 attron(A_BOLD);
+            }
             printw(" %c ", value);
-
             attroff(A_BOLD);
         }
         attron(A_BOLD);
@@ -111,6 +123,7 @@ void draw_sudoku() {
         move(Y + 2 * y + 2, X);
         attroff(A_BOLD);
     }
+    attron(A_BOLD);
     for (x = 0; x < ROW_LEN; x++)
         printw("+---");
     printw("+");
@@ -255,7 +268,7 @@ int main(int argc, char **argv) {
             default:
                 break;
         }
-    }   while (ch != 'q');
+    }   while (ch != 'q' && !is_complete());
 
     endwin();
     return EXIT_SUCCESS;
