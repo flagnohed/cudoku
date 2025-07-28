@@ -24,11 +24,8 @@ void screen2cells(int *y, int *x) {
 /* Writes CH (value as char) at the correct position in CELLS.
  * We complain if CH is invalid or if we already have a
  * constant value there (i.e. not user added). */
-void write_cell(int *y, int *x, int ch, bool note) {
-    int val, r, c;
-    r = *y;
-    c = *x;
-    screen2cells(&r, &c);
+void write_cell(int r, int c, int ch, bool note) {
+    int val;
     Cell *cell = &cells[r][c];
     if (cell->is_constant) {
         OUTPUT_MSG("Cell is constant.");
@@ -47,9 +44,6 @@ void write_cell(int *y, int *x, int ch, bool note) {
     }
 
     set_value(val, r, c, note);
-    cells2screen(&r, &c);
-    *y = r;
-    *x = c;
 }
 
 /* Either set the value or note a value in the cell at (r, c).

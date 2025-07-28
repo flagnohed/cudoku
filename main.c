@@ -47,31 +47,26 @@ void show_notes(int r, int c) {
 }
 
 
-void move_cursor(int *y, int *x, Direction_t dir) {
-    int r = *y, c = *x;
-    screen2cells(&r, &c);
+void move_cursor(int *r, int *c, Direction_t dir) {
     switch (dir) {
         case DIR_UP:
-            r -= (r > 0 ? 1 : 0);
+            *r -= (*r > 0 ? 1 : 0);
             break;
         case DIR_LEFT:
-            c -= (c > 0 ? 1 : 0);
+            *c -= (*c > 0 ? 1 : 0);
             break;
         case DIR_DOWN:
-            r += (r < ROW_LEN - 1 ? 1 : 0);
+            *r += (*r < ROW_LEN - 1 ? 1 : 0);
             break;
         case DIR_RIGHT:
-            c += (c < ROW_LEN - 1 ? 1 : 0);
+            *c += (*c < ROW_LEN - 1 ? 1 : 0);
             break;
         default:
             /* Should never happen! */
             OUTPUT_MSG("move_cursor: unknown direction %d", dir);
             exit(EXIT_FAILURE);
     }
-    show_notes(r, c);
-    cells2screen(&r, &c);
-    *y = r;
-    *x = c;
+    show_notes(*r, *c);
 }
 
 /* Uses ncurses to draw CELLS. Using bold text to print
@@ -84,7 +79,7 @@ void draw_sudoku() {
 
     for (y = 0; y < ROW_LEN; y++) {
 
-        if (y % 3 == 0)
+        if (y % BOX_LEN == 0)
             attron(A_BOLD);
         for (x = 0; x < ROW_LEN; x++)
             printw("+---");
@@ -96,7 +91,7 @@ void draw_sudoku() {
 
         for (x = 0; x < ROW_LEN; x++) {
             cell = &cells[y][x];
-            if (x % 3 == 0)
+            if (x % BOX_LEN == 0)
                 attron(A_BOLD);
             printw("|");
             attroff(A_BOLD);
@@ -166,53 +161,60 @@ int main(int argc, char **argv) {
     const char *fname;
     bool solver_mode = false, note_mode = false;
     switch (argc) {
-    case 1:
-        /* User did not give a sudoku file, so use the default one. */
-        fname = &GAME_FILE[0];
-        break;
-    case 2:
-        /* User either supplied file name or a flag. */
-        if (strncmp(argv[1], "-h", 3) == 0) {
-            print_usage();
-            return EXIT_SUCCESS;
-        }
-        else if (strncmp(argv[1], "-s", 3) == 0) {
-            solver_mode = true;
+        case 1:
+            /* User did not give a sudoku file, so use the default one. */
             fname = &GAME_FILE[0];
             break;
-        }
-        /* If it is not a valid flag, we assume user supplied
-        * a file name. read_grid() will complain later otherwise,
-        * so this assumption is OK to make. */
-        fname = argv[1];
-        break;
-    case 3:
-        if (strncmp(argv[1], "-s", 3) == 0) {
-            solver_mode = true;
-            fname = argv[2];
+        case 2:
+            /* User either supplied file name or a flag. */
+            if (strncmp(argv[1], "-h", 3) == 0) {
+                print_usage();
+                return EXIT_SUCCESS;
+            }
+            else if (strncmp(argv[1], "-s", 3) == 0) {
+                solver_mode = true;
+                fname = &GAME_FILE[0];
+                break;
+            }
+            /* If it is not a valid flag, we assume user supplied
+            * a file name. read_grid() will complain later otherwise,
+            * so this assumption is OK to make. */
+            fname = argv[1];
             break;
-        }
-        /* Intentional fall-through. */
-    default:
-        /* This will change later when we add difficulties. */
-        print_usage();
-        return EXIT_FAILURE;
+        case 3:
+            if (strncmp(argv[1], "-s", 3) == 0) {
+                solver_mode = true;
+                fname = argv[2];
+                break;
+            }
+            /* Intentional fall-through. */
+        default:
+            /* This will change later when we add difficulties. */
+            print_usage();
+            return EXIT_FAILURE;
     }
+
     /* Fill CELLS and ANSWER. */
     read_grid (fname, false);
     read_grid (ANSWER_FILE, true);
+
     initscr();             /* Initiate curses system. */
     raw();                 /* Line buffering disabled. */
     keypad(stdscr, TRUE);  /* F1, F2, arrow keys, ... */
     noecho();              /* Dont echo while we do getch. */
-    cells2screen(&y, &x);
+
     if (solver_mode) {
         solve();
     }
 
     do {
+        cells2screen(&y, &x);
+        /* These functions need screen coordinates... */
         draw_sudoku();
         move(y, x);
+        /* ...and the rest only cares about grid coordinates! */
+        screen2cells(&y, &x);
+
         ch = tolower(getch());
         CLEAR_LINE(MSG_POS + 1);
         switch(ch) {
@@ -225,7 +227,7 @@ int main(int argc, char **argv) {
             case '7':
             case '8':
             case '9':
-                write_cell(&y, &x, ch, note_mode);
+                write_cell(y, x, ch, note_mode);
                 break;
             case 'm':
                 /* Toggle note mode. */
