@@ -55,7 +55,7 @@ int last_free_cell(Cell subset[ROW_LEN]) {
 /* For the given coordinates, determine if there is only one possible value
  * that can go here. Returns that value if possible, else 0. */
 int last_remaining_cell(int r, int c) {
-    int count = 0, last_value, v;
+    int count = 0, last_value = 0, v;
     for (v = 1; v <= MAX_VAL; v++) {
         if (is_allowed(v, r, c)) {
             count++;
@@ -84,6 +84,7 @@ void note_possible_values(int r, int c) {
  * @todo: use pointers in get_* ? */
 void remove_notes(int v, int r, int c) {
     int i, *note;
+    Cell *box[ROW_LEN];
     /* First check notes in the same row and column. */
     for (i = 0; i < ROW_LEN; i++) {
         if ((note = &cells[r][i].notes[v - 1])) {
@@ -93,14 +94,26 @@ void remove_notes(int v, int r, int c) {
             *note = 0;
         }
     }
+    /* Now do the same thing for the current box. */
+    get_box(box, r, c);
+    for (i = 0; i < ROW_LEN; i++) {
+        if ((note = &box[i]->notes[v - 1])) {
+            *note = 0;
+        }
+    }
 }
 
 /* Writes v as cell value and removes any lingering notes
  * on the same row, column or box. */
 void solve_cell(int v, int r, int c) {
-    Cell subset[ROW_LEN];
-    write_cell(&r, &c, v + '0', false);
-
+    /* Since we use write_cell, which expects screen coordinates as input,
+     * we need to convert our cell coordinates to screen coordinates. */
+    int y = r, x = c;
+    cells2screen(&y, &x);
+    write_cell(&y, &x, v + '0', false);
+    /* remove_notes is not expecting screen coordinates, so we are
+     * back to using regular r and c. */
+    remove_notes(v, r, c);
 }
 
 

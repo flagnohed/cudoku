@@ -43,4 +43,5 @@ void set_value(int val, int r, int c, bool note);
 void cells2screen(int *r, int *c);
 void screen2cells(int *y, int *x);
 void write_cell(int *y, int *x, int ch, bool note);
+void get_box(Cell *box[ROW_LEN], int r, int c);
 #endif

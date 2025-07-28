@@ -81,13 +81,13 @@ void set_value(int val, int r, int c, bool note) {
  * We can still access the coordinates for each cell
  * since they keep track on it themselves.
  */
-void get_box(Cell box[ROW_LEN], int r, int c) {
+void get_box(Cell *box[ROW_LEN], int r, int c) {
     /* Figure out where the start of the current box is. */
 
     int start_r = r - r % 3, start_c = c - c % 3, count = 0, i, j;
     for (i = start_r; i < start_r + 3; i++) {
         for (j = start_c; j < start_c + 3; j++) {
-            box[count] = cells[i][j];
+            box[count] = &cells[i][j];
             count++;
         }
     }
@@ -95,33 +95,33 @@ void get_box(Cell box[ROW_LEN], int r, int c) {
 
 
 /* Gets row R from cells and puts it in ROW. */
-void get_row(Cell row[ROW_LEN], int r) {
+void get_row(Cell *row[ROW_LEN], int r) {
     int i;
     for (i = 0; i < ROW_LEN; i++) {
-        row[i] = cells[r][i];
+        row[i] = &cells[r][i];
     }
 }
 
 
 /* Gets column C from cells and puts it in col. */
-void get_col(Cell col[ROW_LEN], int c) {
+void get_col(Cell *col[ROW_LEN], int c) {
     int i;
     for (i = 0; i < ROW_LEN; i++) {
-        col[i] = cells[i][c];
+        col[i] = &cells[i][c];
     }
 }
 
 
 /* Checks if a Cell has value VALUE in a row, column or box. */
-bool is_in_subset(int value, Cell subset[ROW_LEN], bool note) {
+bool is_in_subset(int value, Cell *subset[ROW_LEN], bool note) {
     int i;
     for (i = 0; i < ROW_LEN; i++) {
-        if (!note && subset[i].value == value) {
+        if (!note && subset[i]->value == value) {
             return true;
         }
         /* Used by solver to see if any cells contains a certain note
          * which then ought to be removed. */
-        if (subset[i].notes[value - 1]) {
+        if (subset[i]->notes[value - 1]) {
             return true;
         }
     }
@@ -132,7 +132,7 @@ bool is_in_subset(int value, Cell subset[ROW_LEN], bool note) {
 /* Checks if a value can be placed in a given spot,
  * in terms of its environment (sudoku rules). */
 bool is_allowed(int value, int r, int c) {
-    Cell subset[ROW_LEN] = {};
+    Cell *subset[ROW_LEN] = {};
     get_row(subset, r);
     if (is_in_subset(value, subset, false)) {
         OUTPUT_MSG("Found %d in row %d\n", value, r);
