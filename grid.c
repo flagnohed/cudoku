@@ -11,15 +11,22 @@ extern Cell answer[ROW_LEN][ROW_LEN];
  * If we already have noted or set the value at this cell, we
  * interpret it as a toggle, i.e., set it to 0 instead. */
 void set_value(int val, int r, int c, bool note) {
+    int i;
     Cell *cell = &cells[r][c];
     if (note) {
         /* Note value at current cell, or remove the note it value is reentered. */
-        OUTPUT_MSG("Note mode is on!")
         cell->notes[val - 1] = (cell->notes[val - 1] ? 0 : val);
         return;
     }
     /* Erasing by reentering value is handled earlier in the call chain. */
-    cell->value = val;
+    if ((cell->value = val) == 0) {
+        return;
+    }
+    /* If we are not erasing, i.e., we are adding a value != 0 to the cell,
+     * we want to remove all notes from the cell. */
+    for (i = 0; i < ROW_LEN; i++) {
+        cell->notes[i] = 0;
+    }
 
 }
 
