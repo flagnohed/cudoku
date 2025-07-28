@@ -139,7 +139,7 @@ bool is_complete() {
     int i, j;
     for (i = 0; i < ROW_LEN; i++) {
         for (j = 0; j < ROW_LEN; j++) {
-            if (is_cell_correct(i, j))
+            if (!is_cell_correct(i, j))
                 return false;
         }
     }
