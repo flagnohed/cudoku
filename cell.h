@@ -40,5 +40,7 @@ typedef struct {
 
 bool is_allowed(int value, int r, int c);
 void set_value(int val, int r, int c, bool note);
-
+void cells2screen(int *r, int *c);
+void screen2cells(int *y, int *x);
+void write_cell(int *y, int *x, int ch, bool note);
 #endif

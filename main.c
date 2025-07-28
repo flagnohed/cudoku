@@ -4,16 +4,124 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdlib.h>
-#include "draw.h"
-#include "grid.h"
+#include "cell.h"
 #include "solver.h"
 
+/* Game files. */
 #define GAME_DIR "sudokus/"
 #define GAME_FILE GAME_DIR "sudoku1.txt"
 #define ANSWER_FILE GAME_DIR "sudoku1-solved.txt"
 
+/* Special keys. */
+#define KEY_UARR 259
+#define KEY_DARR 258
+#define KEY_LARR 260
+#define KEY_RARR 261
+#define KEY_CTRLC 3
+
+typedef enum {
+    DIR_UP,
+    DIR_DOWN,
+    DIR_LEFT,
+    DIR_RIGHT,
+}   Direction_t;
+
 Cell cells[ROW_LEN][ROW_LEN] = {};
 Cell answer[ROW_LEN][ROW_LEN] = {};
+
+
+/* Output all the notes for the current cell. */
+void show_notes(int r, int c) {
+    /* "Notes: " + "x, " * 9 + \0 = 7 + 27 + 1 = 35. */
+    char note_str[35], tmp_str[4];
+    int note_idx, cur_note;
+    sprintf(note_str, "Notes: ");
+    for (note_idx = 0; note_idx < ROW_LEN - 1; note_idx++) {
+        cur_note = cells[r][c].notes[note_idx];
+        if (cur_note) {
+            sprintf(tmp_str, "%d, ", cur_note);
+            strncat(note_str, tmp_str, 4);
+        }
+    }
+    OUTPUT_MSG("%s", note_str);
+}
+
+
+void move_cursor(int *y, int *x, Direction_t dir) {
+    int r = *y, c = *x;
+    screen2cells(&r, &c);
+    switch (dir) {
+        case DIR_UP:
+            r -= (r > 0 ? 1 : 0);
+            break;
+        case DIR_LEFT:
+            c -= (c > 0 ? 1 : 0);
+            break;
+        case DIR_DOWN:
+            r += (r < ROW_LEN - 1 ? 1 : 0);
+            break;
+        case DIR_RIGHT:
+            c += (c < ROW_LEN - 1 ? 1 : 0);
+            break;
+        default:
+            /* Should never happen! */
+            OUTPUT_MSG("move_cursor: unknown direction %d", dir);
+            exit(EXIT_FAILURE);
+    }
+    show_notes(r, c);
+    cells2screen(&r, &c);
+    *y = r;
+    *x = c;
+}
+
+/* Uses ncurses to draw CELLS. Using bold text to print
+ * out the 9 in the grid (1 box = 3x3 cells). */
+void draw_sudoku() {
+    int x, y;
+    char value;
+    move(Y, X);
+    Cell *cell;
+
+    for (y = 0; y < ROW_LEN; y++) {
+
+        if (y % 3 == 0)
+            attron(A_BOLD);
+        for (x = 0; x < ROW_LEN; x++)
+            printw("+---");
+        printw("+");
+
+        /* Top border done, now move down to values. */
+        move(Y + 2 * y + 1, X);
+        attroff(A_BOLD);
+
+        for (x = 0; x < ROW_LEN; x++) {
+            cell = &cells[y][x];
+            if (x % 3 == 0)
+                attron(A_BOLD);
+            printw("|");
+            attroff(A_BOLD);
+            value = (char) cell->value + '0';
+            if (value == '0')
+                /* Don't print out 0 at the empty cells. */
+                value = ' ';
+
+            if (cell->is_constant)
+                attron(A_BOLD);
+            printw(" %c ", value);
+
+            attroff(A_BOLD);
+        }
+        attron(A_BOLD);
+        printw("|");
+        move(Y + 2 * y + 2, X);
+        attroff(A_BOLD);
+    }
+    for (x = 0; x < ROW_LEN; x++)
+        printw("+---");
+    printw("+");
+    attroff(A_BOLD);
+    REFRESH_0();
+}
 
 
 /* Reads a grid from file FNAME. */

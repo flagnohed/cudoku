@@ -1,10 +1,56 @@
 #include <stdbool.h>
 #include <sys/types.h>
-#include "grid.h"
+#include "cell.h"
 
 extern Cell cells[ROW_LEN][ROW_LEN];
 extern Cell answer[ROW_LEN][ROW_LEN];
 
+
+/* Convert CELLS indexes to screen coordinates.
+ * Used in main.c to initiate cursor. */
+void cells2screen(int *r, int *c) {
+    *r = Y + (*r * 2) + 1;
+    *c = X + (*c * 4) + 2;
+}
+
+
+/* Converts screen coordinates to CELLS indexes. */
+void screen2cells(int *y, int *x) {
+    *y = (*y - Y - 1) / 2;
+    *x = (*x - X - 2) / 4;
+}
+
+
+/* Writes CH (value as char) at the correct position in CELLS.
+ * We complain if CH is invalid or if we already have a
+ * constant value there (i.e. not user added). */
+void write_cell(int *y, int *x, int ch, bool note) {
+    int val, r, c;
+    r = *y;
+    c = *x;
+    screen2cells(&r, &c);
+    Cell *cell = &cells[r][c];
+    if (cell->is_constant) {
+        OUTPUT_MSG("Cell is constant.");
+        return;
+    }
+    val = ch - '0';
+
+    if (cell->value == val) {
+        /* Reentering the already existing value
+           is interpreted as erasing. */
+        val = 0;
+        OUTPUT_MSG("Cell value already there, erasing instead.")
+    }
+    else if (!is_allowed(val, r, c)) {
+        return;
+    }
+
+    set_value(val, r, c, note);
+    cells2screen(&r, &c);
+    *y = r;
+    *x = c;
+}
 
 /* Either set the value or note a value in the cell at (r, c).
  * If we already have noted or set the value at this cell, we

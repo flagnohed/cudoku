@@ -1,5 +1,4 @@
-#include "draw.h"  /* Needed for when we want to draw the solution. */
-#include "grid.h"
+#include "cell.h"
 
 
 #define MAX_VAL 9
