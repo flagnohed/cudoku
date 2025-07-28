@@ -1,42 +1,10 @@
-#include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
-
-#include "grid.h"
 #include <sys/types.h>
+#include "grid.h"
 
-Cell cells[ROW_LEN][ROW_LEN] = {};
-Cell answer[ROW_LEN][ROW_LEN] = {};
-
-
-/* Reads a grid from file FNAME. */
-void read_grid(const char *fname, bool is_answer) {
-    FILE *fp;
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
-    int r = 0, c;
-    fp = fopen(fname, "r");
-    if (fp == NULL) {
-        printf("Could not open %s.\n", fname);
-        exit(EXIT_FAILURE);
-    }
-    while ((read = getline(&line, &len, fp)) != -1) {
-        for (c = 0; c < ROW_LEN; c++) {
-            Cell cell;
-            cell.row = r;
-            cell.col = c;
-            cell.value = line[c] - '0';
-            cell.is_constant = cell.value != 0;
-            if (is_answer)
-                answer[r][c] = cell;
-            else
-                cells[r][c] = cell;
-        }
-        r++;
-    }
-    fclose(fp);
-}
+extern Cell cells[ROW_LEN][ROW_LEN];
+extern Cell answer[ROW_LEN][ROW_LEN];
 
 
 /* Either set the value or note a value in the cell at (r, c).
@@ -57,7 +25,7 @@ void set_value(int val, int r, int c, bool note) {
 
 
 /* Prints a row, column or box (last two are printed as rows). */
-void print_subset(Cell subset[ROW_LEN]) {
+static void print_subset(Cell subset[ROW_LEN]) {
     int i;
     for (i = 0; i < ROW_LEN; i++) {
         printf("%d", subset[i].value);
@@ -67,7 +35,7 @@ void print_subset(Cell subset[ROW_LEN]) {
 
 
 /* Prints a given grid. */
-void print_grid(Cell grid[ROW_LEN][ROW_LEN]) {
+static void print_grid(Cell grid[ROW_LEN][ROW_LEN]) {
     int r;
     for (r = 0; r < ROW_LEN; r++) {
         print_subset(grid[r]);

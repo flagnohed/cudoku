@@ -3,7 +3,7 @@
 #include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <stdlib.h>
 #include "draw.h"
 #include "grid.h"
 #include "solver.h"
@@ -12,10 +12,39 @@
 #define GAME_FILE GAME_DIR "sudoku1.txt"
 #define ANSWER_FILE GAME_DIR "sudoku1-solved.txt"
 
-extern Cell cells[ROW_LEN][ROW_LEN];
-extern Cell answer[ROW_LEN][ROW_LEN];
+Cell cells[ROW_LEN][ROW_LEN] = {};
+Cell answer[ROW_LEN][ROW_LEN] = {};
 
-void print_usage() {
+
+/* Reads a grid from file FNAME. */
+static void read_grid(const char *fname, bool is_answer) {
+    FILE *fp;
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
+    int r = 0, c;
+    fp = fopen(fname, "r");
+    if (fp == NULL) {
+        printf("Could not open %s.\n", fname);
+        exit(EXIT_FAILURE);
+    }
+    while ((read = getline(&line, &len, fp)) != -1) {
+        for (c = 0; c < ROW_LEN; c++) {
+            Cell cell;
+            cell.value = line[c] - '0';
+            cell.is_constant = cell.value != 0;
+            if (is_answer)
+                answer[r][c] = cell;
+            else
+                cells[r][c] = cell;
+        }
+        r++;
+    }
+    fclose(fp);
+}
+
+
+static void print_usage() {
     printf("Usage:\n");
     printf("./cudoku -[h|s] [FILE]\n");
     printf("    -h : prints this info and exits.\n");
@@ -25,7 +54,7 @@ void print_usage() {
 
 
 int main(int argc, char **argv) {
-    int x, y, ch;
+    int x = 0, y = 0, ch = 0;
     const char *fname;
     bool solver_mode = false, note_mode = false;
     switch (argc) {
@@ -68,11 +97,7 @@ int main(int argc, char **argv) {
     raw();                 /* Line buffering disabled. */
     keypad(stdscr, TRUE);  /* F1, F2, arrow keys, ... */
     noecho();              /* Dont echo while we do getch. */
-
-    x = 0;
-    y = 0;
-    ch = 0;
-
+    cells2screen(&y, &x);
     if (solver_mode) {
         solve();
     }
@@ -82,7 +107,6 @@ int main(int argc, char **argv) {
         move(y, x);
         ch = tolower(getch());
         CLEAR_LINE(MSG_POS + 1);
-
         switch(ch) {
             case '1':
             case '2':
