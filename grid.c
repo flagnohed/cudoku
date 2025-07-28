@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdbool.h>
 #include <sys/types.h>
 #include "grid.h"
@@ -28,34 +27,6 @@ void set_value(int val, int r, int c, bool note) {
         cell->notes[i] = 0;
     }
 
-}
-
-
-/* Prints a row, column or box (last two are printed as rows). */
-static void print_subset(Cell subset[ROW_LEN]) {
-    int i;
-    for (i = 0; i < ROW_LEN; i++) {
-        printf("%d", subset[i].value);
-    }
-    printf("\n");
-}
-
-
-/* Prints a given grid. */
-static void print_grid(Cell grid[ROW_LEN][ROW_LEN]) {
-    int r;
-    for (r = 0; r < ROW_LEN; r++) {
-        print_subset(grid[r]);
-    }
-}
-
-
-/* Prints CELLS and ANSWER. */
-void print_grids() {
-    printf("Current grid:\n");
-    print_grid(cells);
-    printf("\nAnswer grid:\n");
-    print_grid(answer);
 }
 
 
