@@ -7,8 +7,9 @@
 extern Cell cells[ROW_LEN][ROW_LEN];
 
 
-/* Convert CELLS indexes to screen coordinates. */
-static void cells2screen(int *r, int *c) {
+/* Convert CELLS indexes to screen coordinates.
+ * Used in main.c to initiate cursor. */
+void cells2screen(int *r, int *c) {
     *r = Y + (*r * 2) + 1;
     *c = X + (*c * 4) + 2;
 }

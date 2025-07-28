@@ -25,6 +25,7 @@ typedef enum {
     COL_NFCOL,
 }   Color_t;
 
+void cells2screen(int *y, int *x);
 void draw_sudoku();
 void write_cell(int *y, int *x, int ch, bool note);
 void move_cursor(int *y, int *x, Direction_t dir);
