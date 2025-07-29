@@ -14,15 +14,17 @@ extern Cell cells[ROW_LEN][ROW_LEN];
 
 
 /* This function should only be called if all cells have been correctly noted.
- * Returns true if the given cell only has a single note. */
-bool is_obvious_single(int r, int c) {
-    int i, count = 0;
+ * Returns the value if the given cell only has a single note, 0 otherwise. */
+int is_obvious_single(int r, int c) {
+    int i, count = 0, last_value = 0, v;
     for (i = 0; i < ROW_LEN; i++) {
         /* Count the number of notes on this cell. */
-        if (cells[r][c].notes[i])
+        if ((v = cells[r][c].notes[i])) {
+            last_value = v;
             count++;
+        }
     }
-    return count == 1;
+    return (count == 1 ? last_value : 0);
 }
 
 
@@ -113,11 +115,12 @@ void solve_cell(int v, int r, int c) {
 
 /* Main solver function.  */
 void solve() {
-    int r, c, v;
+    int r, c, v = 0;
     for (r = 0; r < ROW_LEN; r++) {
         for (c = 0; c < ROW_LEN; c++) {
             note_possible_values(r, c);
-            if ((v = last_remaining_cell(r, c))) {
+            if ((v = last_remaining_cell(r, c)) ||
+                (v = is_obvious_single(r, c))) {
                 /* Can only be v for this cell, so we are done here! */
                 solve_cell(v, r, c);
                 continue;
