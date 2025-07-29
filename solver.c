@@ -16,10 +16,12 @@ extern Cell cells[ROW_LEN][ROW_LEN];
 /* This function should only be called if all cells have been correctly noted.
  * Returns the value if the given cell only has a single note, 0 otherwise. */
 int is_obvious_single(int r, int c) {
-    int i, count = 0, last_value = 0, v;
+    int i, v, count = 0, last_value = 0;
     for (i = 0; i < ROW_LEN; i++) {
         /* Count the number of notes on this cell. */
         if ((v = cells[r][c].notes[i])) {
+            /* Keep track of the last seen note,
+             * as we want to return it if it is alone. */
             last_value = v;
             count++;
         }
@@ -36,19 +38,21 @@ int last_free_cell(Cell subset[ROW_LEN]) {
     int unseen[ROW_LEN] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     for (i = 0; i < ROW_LEN; i++) {
         found_value = subset[i].value;
-        if (found_value == 0)
+        if (found_value == 0) {
             empty_cells++;
-        else
+        }
+        else {
             unseen[found_value - 1] = 0;
+        }
     }
-    if (empty_cells != 1)
+    if (empty_cells != 1) {
         return 0;
-
-    for (i = 0; i < ROW_LEN; i++) {
-        if (unseen[i])
-            return unseen[i];
     }
-
+    for (i = 0; i < ROW_LEN; i++) {
+        if (unseen[i]) {
+            return unseen[i];
+        }
+    }
     /* Should never reach this. */
     return 0;
 }
@@ -72,7 +76,7 @@ int last_remaining_cell(int r, int c) {
 void note_possible_values(int r, int c) {
     int v;
     for (v = 1; v <= MAX_VAL; v++) {
-        if (is_allowed(v, r, c)) {
+        if (cells[r][c].notes[v - 1] == 0 && is_allowed(v, r, c)) {
             set_value(v, r, c, true);
         }
     }
@@ -82,8 +86,7 @@ void note_possible_values(int r, int c) {
 /* This function does not use get_{row, col, box}
  * because those helper functions give copies of that subset.
  * In this solver specific function we need to manipulate
- * these places in the actual cells grid.
- * @todo: use pointers in get_* ? */
+ * these places in the actual cells grid. */
 void remove_notes(int v, int r, int c) {
     int i, *note;
     Cell *box[ROW_LEN];
@@ -121,9 +124,12 @@ void solve() {
             note_possible_values(r, c);
             if ((v = last_remaining_cell(r, c)) ||
                 (v = is_obvious_single(r, c))) {
-                /* Can only be v for this cell, so we are done here! */
+                /* Found the only possible value for this cell. Write it,
+                 * remove any lingering notes and then call this function again
+                 * to reiterate the entire grid to see if removing lingering notes
+                 * revealed some other cell that can now be solved. */
                 solve_cell(v, r, c);
-                continue;
+                solve();
             }
         }
     }
