@@ -179,7 +179,7 @@ static void print_usage() {
 
 
 int main(int argc, char **argv) {
-    int x = 0, y = 0, ch = 0;
+    int r = 0, c = 0, ch = 0;
     const char *fname;
     bool solver_mode = false, note_mode = false;
     switch (argc) {
@@ -230,12 +230,12 @@ int main(int argc, char **argv) {
     }
 
     do {
-        cells2screen(&y, &x);
+        cells2screen(&r, &c);
         /* These functions need screen coordinates... */
         draw_sudoku();
-        move(y, x);
+        move(r, c);
         /* ...and the rest only cares about grid coordinates! */
-        screen2cells(&y, &x);
+        screen2cells(&r, &c);
 
         ch = tolower(getch());
         CLEAR_LINE(MSG_POS + 1);
@@ -249,7 +249,7 @@ int main(int argc, char **argv) {
             case '7':
             case '8':
             case '9':
-                write_cell(y, x, ch, note_mode);
+                write_cell(ch - '0', r, c, note_mode);
                 break;
             case 'm':
                 /* Toggle note mode. */
@@ -257,19 +257,19 @@ int main(int argc, char **argv) {
                 break;
             case KEY_UARR:
             case 'k':
-                move_cursor(&y, &x, DIR_UP);
+                move_cursor(&r, &c, DIR_UP);
                 break;
             case KEY_DARR:
             case 'j':
-                move_cursor(&y, &x, DIR_DOWN);
+                move_cursor(&r, &c, DIR_DOWN);
                 break;
             case KEY_LARR:
             case 'h':
-                move_cursor(&y, &x, DIR_LEFT);
+                move_cursor(&r, &c, DIR_LEFT);
                 break;
             case KEY_RARR:
             case 'l':
-                move_cursor(&y, &x, DIR_RIGHT);
+                move_cursor(&r, &c, DIR_RIGHT);
                 break;
             case KEY_CTRLC:
                 ch = 'q';

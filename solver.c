@@ -111,7 +111,7 @@ void remove_notes(int v, int r, int c) {
 /* Writes v as cell value and removes any lingering notes
  * on the same row, column or box. */
 void solve_cell(int v, int r, int c) {
-    write_cell(r, c, v + '0', false);
+    write_cell(v, r, c, false);
     remove_notes(v, r, c);
 }
 

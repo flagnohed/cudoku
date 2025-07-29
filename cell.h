@@ -38,11 +38,12 @@ typedef struct {
     int notes[ROW_LEN];
 }   Cell;
 
-bool is_allowed(int value, int r, int c);
-void set_value(int val, int r, int c, bool note);
+bool is_allowed(int v, int r, int c);
+void set_value(int v, int r, int c, bool note);
 void cells2screen(int *r, int *c);
 void screen2cells(int *y, int *x);
-void write_cell(int r, int c, int ch, bool note);
+void write_cell(int v, int r, int c, bool note);
 void get_box(Cell *box[ROW_LEN], int r, int c);
 bool is_complete();
+
 #endif
