@@ -11,6 +11,9 @@
 #define GAME_DIR "sudokus/"
 #define GAME_FILE GAME_DIR "sudoku1.txt"
 #define ANSWER_FILE GAME_DIR "sudoku1-solved.txt"
+#define SUDOKUS_EASY   GAME_DIR "easy.txt"
+#define SUDOKUS_MEDIUM GAME_DIR "medium.txt"
+#define SUDOKUS_HARD   GAME_DIR "hard.txt"
 
 /* Special keys. */
 #define KEY_UARR 259
@@ -18,6 +21,12 @@
 #define KEY_LARR 260
 #define KEY_RARR 261
 #define KEY_CTRLC 3
+
+/* Number of sudokus in each difficulty
+ * (sudokus/{difficulty}.txt) */
+#define NUM_SUDOKUS_EASY   100000
+#define NUM_SUDOKUS_MEDIUM 352643
+#define NUM_SUDOKUS_HARD   321592
 
 typedef enum {
     DIR_UP,
