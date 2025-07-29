@@ -2,6 +2,7 @@
 #include <sys/types.h>
 #include "cell.h"
 
+
 extern Cell cells[ROW_LEN][ROW_LEN];
 extern Cell answer[ROW_LEN][ROW_LEN];
 
@@ -32,7 +33,6 @@ void write_cell(int r, int c, int ch, bool note) {
         return;
     }
     val = ch - '0';
-
     if (cell->value == val) {
         /* Reentering the already existing value
            is interpreted as erasing. */
@@ -42,9 +42,9 @@ void write_cell(int r, int c, int ch, bool note) {
     else if (!is_allowed(val, r, c)) {
         return;
     }
-
     set_value(val, r, c, note);
 }
+
 
 /* Either set the value or note a value in the cell at (r, c).
  * If we already have noted or set the value at this cell, we
@@ -66,7 +66,6 @@ void set_value(int val, int r, int c, bool note) {
     for (i = 0; i < ROW_LEN; i++) {
         cell->notes[i] = 0;
     }
-
 }
 
 
@@ -77,7 +76,6 @@ void set_value(int val, int r, int c, bool note) {
  */
 void get_box(Cell *box[ROW_LEN], int r, int c) {
     /* Figure out where the start of the current box is. */
-
     int start_r = r - r % 3, start_c = c - c % 3, count = 0, i, j;
     for (i = start_r; i < start_r + 3; i++) {
         for (j = start_c; j < start_c + 3; j++) {
@@ -113,9 +111,9 @@ bool is_in_subset(int value, Cell *subset[ROW_LEN], bool note) {
         if (!note && subset[i]->value == value) {
             return true;
         }
-        /* Used by solver to see if any cells contains a certain note
-         * which then ought to be removed. */
-        if (subset[i]->notes[value - 1]) {
+        /* Used by solver to see if any cells contains a certain
+         * note which then ought to be removed. */
+        if (note && subset[i]->notes[value - 1]) {
             return true;
         }
     }
