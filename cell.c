@@ -142,22 +142,42 @@ bool is_allowed(int v, int r, int c) {
     return true;
 }
 
-
-/* Checks if a CELL at (R, C) is correct. */
-static bool is_cell_correct(int r, int c) {
-    return cells[r][c].value == answer[r][c].value;
-}
-
-
-/* Checks if CELLS equals ANSWER. */
-bool is_complete() {
-    int i, j;
+bool is_subset_solved(Cell *subset[ROW_LEN]) {
+    int i, cur_idx;
+    int seen_values[ROW_LEN] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
     for (i = 0; i < ROW_LEN; i++) {
-        for (j = 0; j < ROW_LEN; j++) {
-            if (!is_cell_correct(i, j))
-                return false;
+        cur_idx = subset[i]->value - 1;
+        if (seen_values[cur_idx]) {
+            /* We now have multiple instances of the same value
+             * in this subset, which is not allowed! */
+            return false;
+        }
+        /* Does not matter what we put here (as long as it is
+         * not zero of course) since seen_values' values are
+         * just used as booleans in practice. */
+        seen_values[cur_idx] = 1;
+    }
+    /* At last, check if we have missed any value. */
+    for (i = 0; i < ROW_LEN; i++) {
+        if (!seen_values[subset[i]->value - 1]) {
+            return false;
         }
     }
     return true;
 }
 
+bool is_complete() {
+    int i;
+    Cell *subset[ROW_LEN];
+    for (i = 0; i < ROW_LEN; i++) {
+        get_row(subset, i);
+        if (!is_subset_solved(subset)) {
+            return false;
+        }
+        get_col(subset, i);
+        if (!is_subset_solved(subset)) {
+            return false;
+        }
+    }
+    return true;
+}
