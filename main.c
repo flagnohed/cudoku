@@ -250,6 +250,9 @@ int main(int argc, char **argv) {
             case '8':
             case '9':
                 write_cell(ch - '0', r, c, note_mode);
+                if (is_complete() && !note_mode) {
+                    ch = 'q';
+                }
                 break;
             case 'm':
                 /* Toggle note mode. */
@@ -277,7 +280,7 @@ int main(int argc, char **argv) {
             default:
                 break;
         }
-    }   while (ch != 'q' && !is_complete());
+    }   while (ch != 'q');
 
     endwin();
     return EXIT_SUCCESS;
