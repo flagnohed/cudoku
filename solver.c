@@ -1,5 +1,5 @@
 #include "cell.h"
-
+#include "solver.h"
 
 #define MAX_VAL 9
 
@@ -15,7 +15,7 @@ extern Cell cells[ROW_LEN][ROW_LEN];
 
 /* This function should only be called if all cells have been correctly noted.
  * Returns the value if the given cell only has a single note, 0 otherwise. */
-int is_obvious_single(int r, int c) {
+static int is_obvious_single(int r, int c) {
     int i, v, count = 0, last_value = 0;
     for (i = 0; i < ROW_LEN; i++) {
         /* Count the number of notes on this cell. */
@@ -33,7 +33,7 @@ int is_obvious_single(int r, int c) {
 /* For a subset, check if we have one single empty cell.
  * Returns 0 if no last free cell found, or value between 1-9
  * if found. */
-int last_free_cell(Cell subset[ROW_LEN]) {
+static int last_free_cell(Cell subset[ROW_LEN]) {
     int i, found_value, empty_cells = 0;
     int unseen[ROW_LEN] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     for (i = 0; i < ROW_LEN; i++) {
@@ -60,7 +60,7 @@ int last_free_cell(Cell subset[ROW_LEN]) {
 
 /* For the given coordinates, determine if there is only one possible value
  * that can go here. Returns that value if possible, else 0. */
-int last_remaining_cell(int r, int c) {
+static int last_remaining_cell(int r, int c) {
     int count = 0, last_value = 0, v;
     for (v = 1; v <= MAX_VAL; v++) {
         if (is_allowed(v, r, c)) {
@@ -73,7 +73,7 @@ int last_remaining_cell(int r, int c) {
 
 
 /* Note all possible values of this cell. */
-void note_possible_values(int r, int c) {
+static void note_possible_values(int r, int c) {
     int v;
     for (v = 1; v <= MAX_VAL; v++) {
         if (cells[r][c].notes[v - 1] == 0 && is_allowed(v, r, c)) {
@@ -87,7 +87,7 @@ void note_possible_values(int r, int c) {
  * because those helper functions give copies of that subset.
  * In this solver specific function we need to manipulate
  * these places in the actual cells grid. */
-void remove_notes(int v, int r, int c) {
+static void remove_notes(int v, int r, int c) {
     int i, *note;
     Cell *box[ROW_LEN];
     /* First check notes in the same row and column. */
@@ -110,14 +110,14 @@ void remove_notes(int v, int r, int c) {
 
 /* Writes v as cell value and removes any lingering notes
  * on the same row, column or box. */
-void solve_cell(int v, int r, int c) {
+static void solve_cell(int v, int r, int c) {
     write_cell(v, r, c, false);
     remove_notes(v, r, c);
 }
 
 
 /* Main solver function.  */
-void solve() {
+void solve(void) {
     int r, c, v = 0;
     for (r = 0; r < ROW_LEN; r++) {
         for (c = 0; c < ROW_LEN; c++) {

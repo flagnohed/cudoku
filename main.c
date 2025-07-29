@@ -35,12 +35,12 @@ typedef enum {
     DIR_RIGHT,
 }   Direction_t;
 
-Cell cells[ROW_LEN][ROW_LEN] = {};
-Cell answer[ROW_LEN][ROW_LEN] = {};
+Cell cells[ROW_LEN][ROW_LEN];
+Cell answer[ROW_LEN][ROW_LEN];
 
 
 /* Output all the notes for the current cell. */
-void show_notes(int r, int c) {
+static void show_notes(int r, int c) {
     /* "Notes: " + "x, " * 9 + \0 = 7 + 27 + 1 = 35. */
     char note_str[35], tmp_str[4];
     int note_idx, cur_note;
@@ -56,7 +56,7 @@ void show_notes(int r, int c) {
 }
 
 
-void move_cursor(int *r, int *c, Direction_t dir) {
+static void move_cursor(int *r, int *c, Direction_t dir) {
     switch (dir) {
         case DIR_UP:
             *r -= (*r > 0 ? 1 : 0);
@@ -80,7 +80,7 @@ void move_cursor(int *r, int *c, Direction_t dir) {
 
 /* Uses ncurses to draw CELLS. Using bold text to print
  * out the 9 in the grid (1 box = 3x3 cells). */
-void draw_sudoku() {
+static void draw_sudoku(void) {
     int x, y;
     char value;
     Cell *cell;
@@ -169,7 +169,7 @@ static void read_grid(const char *fname, bool is_answer) {
 }
 
 
-static void print_usage() {
+static void print_usage(void) {
     printf("Usage:\n");
     printf("./cudoku -[h|s] [FILE]\n");
     printf("    -h : prints this info and exits.\n");

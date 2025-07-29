@@ -1,4 +1,5 @@
-CFLAGS = -g -O2 -Wall
+CFLAGS = -g -O2 -Wall -Wextra -pedantic -Wmissing-prototypes \
+		 -Wstrict-prototypes
 CC = gcc
 OBJS = build/cell.o build/main.o build/solver.o
 

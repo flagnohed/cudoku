@@ -82,7 +82,7 @@ void get_box(Cell *box[ROW_LEN], int r, int c) {
 
 
 /* Gets row R from cells and puts it in ROW. */
-void get_row(Cell *row[ROW_LEN], int r) {
+static void get_row(Cell *row[ROW_LEN], int r) {
     int i;
     for (i = 0; i < ROW_LEN; i++) {
         row[i] = &cells[r][i];
@@ -91,7 +91,7 @@ void get_row(Cell *row[ROW_LEN], int r) {
 
 
 /* Gets column C from cells and puts it in col. */
-void get_col(Cell *col[ROW_LEN], int c) {
+static void get_col(Cell *col[ROW_LEN], int c) {
     int i;
     for (i = 0; i < ROW_LEN; i++) {
         col[i] = &cells[i][c];
@@ -100,7 +100,7 @@ void get_col(Cell *col[ROW_LEN], int c) {
 
 
 /* Checks if a Cell has value VALUE in a row, column or box. */
-bool is_in_subset(int v, Cell *subset[ROW_LEN], bool note) {
+static bool is_in_subset(int v, Cell *subset[ROW_LEN], bool note) {
     int i;
     for (i = 0; i < ROW_LEN; i++) {
         if (!note && subset[i]->value == v) {
@@ -123,7 +123,7 @@ bool is_allowed(int v, int r, int c) {
         OUTPUT_MSG("Cell at (%d, %d) is constant (%d)", r, c, v);
         return false;
     }
-    Cell *subset[ROW_LEN] = {};
+    Cell *subset[ROW_LEN] = {0};
     get_row(subset, r);
     if (is_in_subset(v, subset, false)) {
         OUTPUT_MSG("Found %d in row %d\n", v, r);
@@ -142,7 +142,7 @@ bool is_allowed(int v, int r, int c) {
     return true;
 }
 
-bool is_subset_solved(Cell *subset[ROW_LEN]) {
+static bool is_subset_solved(Cell *subset[ROW_LEN]) {
     int i, cur_idx;
     int seen_values[ROW_LEN] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
     for (i = 0; i < ROW_LEN; i++) {
