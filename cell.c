@@ -146,6 +146,9 @@ static bool is_subset_solved(Cell *subset[ROW_LEN]) {
     int i, cur_idx;
     int seen_values[ROW_LEN] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
     for (i = 0; i < ROW_LEN; i++) {
+        if (subset[i]->value == 0) {
+            return false;
+        }
         cur_idx = subset[i]->value - 1;
         if (seen_values[cur_idx]) {
             /* We now have multiple instances of the same value
