@@ -35,8 +35,8 @@ typedef enum {
     DIR_RIGHT,
 }   Direction_t;
 
-Cell cells[ROW_LEN][ROW_LEN];
-Cell answer[ROW_LEN][ROW_LEN];
+Cell cells[ROW_LEN][ROW_LEN] = {0};
+Cell answer[ROW_LEN][ROW_LEN] = {0};
 
 
 /* Output all the notes for the current cell. */
@@ -142,89 +142,123 @@ static void draw_sudoku(void) {
 
 
 /* Reads a grid from file FNAME. */
-static void read_grid(const char *fname, bool is_answer) {
+static void read_grid(const char *fname, const int sudoku_number) {
     FILE *fp;
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
-    int r = 0, c;
+    int v = 0, r = 0, c = 0, row = 1;
     fp = fopen(fname, "r");
     if (fp == NULL) {
         printf("Could not open %s.\n", fname);
         exit(EXIT_FAILURE);
     }
     while ((read = getline(&line, &len, fp)) != -1) {
-        for (c = 0; c < ROW_LEN; c++) {
-            Cell cell;
-            cell.value = line[c] - '0';
-            cell.is_constant = cell.value != 0;
-            if (is_answer)
-                answer[r][c] = cell;
-            else
-                cells[r][c] = cell;
+        if (row != sudoku_number) {
+            row++; continue;
         }
-        r++;
+        /* Found the row containing the sudoku grid!
+         * They are partitioned like this: [HASH] [GRID] [DIFFICULTY],
+         * which means we can skip until after the first whitespace
+         * and parse until the next whitespace after that. */
+        while (*line != ' ') {
+            line++;
+        }
+        /* Also skip the actual whitespace. After that we can start
+         * parsing the sudoku grid. */
+        line++;
+        while (*line != ' ') {
+            // values[count] = *line - '0';
+            // printf("%d %d \n", count, r);
+            Cell cell;
+            v = *line - '0';
+            cell.value = v;
+            cell.is_constant = (bool) v;
+            cells[r][c] = cell;
+            /* @todo: figure out why modulo doesn't work here. */
+            if (++c == ROW_LEN) {
+                c = 0;
+                r++;
+            }
+            line++;
+        }
+        break;
     }
     fclose(fp);
 }
 
 
-static void print_usage(void) {
-    printf("Usage:\n");
-    printf("./cudoku -[h|s] [FILE]\n");
-    printf("    -h : prints this info and exits.\n");
-    printf("    -s : solver mode. \n");
-    printf("    FILE : sudoku game file. Should be placed in %s\n", GAME_DIR);
+static void print_usage(const char *context) {
+    printf("%s\n", context);
+    printf("./cudoku [options] [FILE] \n");
+    printf("[options]: \n");
+    printf("-h, --help\n\tprints this info and exits. \n");
+    printf("-s, --solve\n\tsolver mode. \n");
+    printf("-d, --difficulty [easy|medium|hard]\n\tsets difficulty. Default: easy. \n");
+    printf("-n, --number [n|r]\n\tchooses sudoku number n from the chosen difficulty, \n");
+    printf("\tor a random one if r is supplied. Default: 1. \n");
 }
 
 
 int main(int argc, char **argv) {
-    int r = 0, c = 0, ch = 0;
-    const char *fname;
+    int i, r = 0, c = 0, ch = 0, sudoku_number = 1;
     bool solver_mode = false, note_mode = false;
-    switch (argc) {
-        case 1:
-            /* User did not give a sudoku file, so use the default one. */
-            fname = &GAME_FILE[0];
-            break;
-        case 2:
-            /* User either supplied file name or a flag. */
-            if (strncmp(argv[1], "-h", 3) == 0) {
-                print_usage();
-                return EXIT_SUCCESS;
-            }
-            else if (strncmp(argv[1], "-s", 3) == 0) {
-                solver_mode = true;
-                fname = &GAME_FILE[0];
-                break;
-            }
-            /* If it is not a valid flag, we assume user supplied
-            * a file name. read_grid() will complain later otherwise,
-            * so this assumption is OK to make. */
-            fname = argv[1];
-            break;
-        case 3:
-            if (strncmp(argv[1], "-s", 3) == 0) {
-                solver_mode = true;
-                fname = argv[2];
-                break;
-            }
-            /* Intentional fall-through. */
-        default:
-            /* This will change later when we add difficulties. */
-            print_usage();
-            return EXIT_FAILURE;
-    }
+    const char *fname = SUDOKUS_EASY;
 
-    /* Fill CELLS and ANSWER. */
-    read_grid (fname, false);
-    read_grid (ANSWER_FILE, true);
+    for (i = 1; i < argc; i++) {
+        /* strcmp is OK here since we compare command line arguments
+         * (which are guaranteed to be null-terminated) and literals
+         * (which also are guaranteed to be null-terminated). */
+        if (strcmp(argv[i], "-h") == 0 ||
+                strcmp(argv[i], "--help") == 0) {
+            print_usage("Usage: ");
+            exit(EXIT_SUCCESS);
+        }
+        if (strcmp(argv[i], "-s") == 0 ||
+                strcmp(argv[i], "--solve") == 0) {
+            solver_mode = true;
+            continue;
+        }
+        if (strcmp(argv[i], "-d") == 0 ||
+                strcmp(argv[i], "--difficulty") == 0) {
+            if (i + 1 == c) {
+                print_usage("Found difficulty flag without difficulty.");
+                exit(EXIT_FAILURE);
+            }
+            i++;
+            if (strcmp(argv[i], "easy") == 0) {
+                fname = SUDOKUS_EASY;
+            }
+            else if (strcmp(argv[i], "medium") == 0) {
+                fname = SUDOKUS_MEDIUM;
+            }
+            else if (strcmp(argv[i], "hard") == 0) {
+                fname = SUDOKUS_HARD;
+            }
+            else {
+                print_usage("Unknown difficulty");
+                exit(EXIT_FAILURE);
+            }
+        }
+        if (strcmp(argv[i], "-n") == 0 ||
+                strcmp(argv[i], "--number") == 0) {
+            if (i + 1 == c) {
+                print_usage("Found number flag without number.");
+                exit(EXIT_FAILURE);
+            }
+            if (sscanf(argv[i++], "%d", &sudoku_number) != 1) {
+                print_usage("Failed to parse sudoku number.");
+                exit(EXIT_FAILURE);
+            }
+        }
+    }
 
     initscr();             /* Initiate curses system. */
     raw();                 /* Line buffering disabled. */
     keypad(stdscr, TRUE);  /* F1, F2, arrow keys, ... */
     noecho();              /* Dont echo while we do getch. */
 
+    read_grid (fname, 1);
     if (solver_mode) {
         solve();
     }
