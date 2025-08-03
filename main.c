@@ -44,6 +44,7 @@ static void show_notes(int r, int c) {
     /* "Notes: " + "x, " * 9 + \0 = 7 + 27 + 1 = 35. */
     char note_str[35], tmp_str[4];
     int note_idx, cur_note;
+
     sprintf(note_str, "Notes: ");
     for (note_idx = 0; note_idx < ROW_LEN - 1; note_idx++) {
         cur_note = cells[r][c].notes[note_idx];
@@ -78,14 +79,15 @@ static void move_cursor(int *r, int *c, Direction_t dir) {
     show_notes(*r, *c);
 }
 
+
 /* Uses ncurses to draw CELLS. Using bold text to print
  * out the 9 in the grid (1 box = 3x3 cells). */
 static void draw_sudoku(void) {
     int x, y;
     char value;
     Cell *cell;
-    move(Y, X);
 
+    move(Y, X);
     for (y = 0; y < ROW_LEN; y++) {
         if (y % BOX_LEN == 0) {
             attron(A_BOLD);
@@ -148,41 +150,46 @@ static void read_grid(const char *fname, const int sudoku_number) {
     size_t len = 0;
     ssize_t read;
     int v = 0, r = 0, c = 0, row = 1;
+
     fp = fopen(fname, "r");
     if (fp == NULL) {
         printf("Could not open %s.\n", fname);
         exit(EXIT_FAILURE);
     }
     while ((read = getline(&line, &len, fp)) != -1) {
-        if (row != sudoku_number) {
-            row++; continue;
-        }
-        /* Found the row containing the sudoku grid!
-         * They are partitioned like this: [HASH] [GRID] [DIFFICULTY],
-         * which means we can skip until after the first whitespace
-         * and parse until the next whitespace after that. */
-        while (*line != ' ') {
-            line++;
-        }
-        /* Also skip the actual whitespace. After that we can start
-         * parsing the sudoku grid. */
+        /* Read until we find the correct line in fp. */
+        if (row == sudoku_number) { break; }
+        row++;
+    }
+    if (read == -1) {
+        printf("Reading %s failed.\n", fname);
+        free(line);
+        exit(EXIT_FAILURE);
+    }
+    /* Found the row containing the sudoku grid!
+     * They are partitioned like this: [HASH] [GRID] [DIFFICULTY],
+     * which means we can skip until after the first whitespace
+     * and parse until the next whitespace after that. */
+    while (*line != ' ') {
         line++;
-        while (*line != ' ') {
-            // values[count] = *line - '0';
-            // printf("%d %d \n", count, r);
-            Cell cell;
-            v = *line - '0';
-            cell.value = v;
-            cell.is_constant = (bool) v;
-            cells[r][c] = cell;
-            /* @todo: figure out why modulo doesn't work here. */
-            if (++c == ROW_LEN) {
-                c = 0;
-                r++;
-            }
-            line++;
+    }
+    /* Also skip the actual whitespace. After that we can start
+     * parsing the sudoku grid. */
+    line++;
+    while (*line != ' ') {
+        // values[count] = *line - '0';
+        // printf("%d %d \n", count, r);
+        Cell cell;
+        v = *line - '0';
+        cell.value = v;
+        cell.is_constant = (bool) v;
+        cells[r][c] = cell;
+        /* @todo: figure out why modulo doesn't work here. */
+        if (++c == ROW_LEN) {
+            c = 0;
+            r++;
         }
-        break;
+        line++;
     }
     fclose(fp);
 }
@@ -252,17 +259,20 @@ int main(int argc, char **argv) {
             }
         }
     }
-
+    read_grid (fname, sudoku_number);
+    if (solver_mode) {
+        solve();
+        if (is_complete()) {
+            endwin();
+            printf("Sudoku %d from %s solved! \n",
+                    sudoku_number, fname);
+            return EXIT_SUCCESS;
+        }
+    }
     initscr();             /* Initiate curses system. */
     raw();                 /* Line buffering disabled. */
     keypad(stdscr, TRUE);  /* F1, F2, arrow keys, ... */
     noecho();              /* Dont echo while we do getch. */
-
-    read_grid (fname, 1);
-    if (solver_mode) {
-        solve();
-    }
-
     do {
         cells2screen(&r, &c);
         /* These functions need screen coordinates... */
@@ -270,7 +280,6 @@ int main(int argc, char **argv) {
         move(r, c);
         /* ...and the rest only cares about grid coordinates! */
         screen2cells(&r, &c);
-
         ch = tolower(getch());
         CLEAR_LINE(MSG_POS + 1);
         switch(ch) {
@@ -315,7 +324,6 @@ int main(int argc, char **argv) {
                 break;
         }
     }   while (ch != 'q');
-
     endwin();
     return EXIT_SUCCESS;
 }
