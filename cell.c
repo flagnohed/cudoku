@@ -119,11 +119,11 @@ static bool is_in_subset(int v, Cell *subset[ROW_LEN], bool note) {
 /* Checks if a value can be placed in a given spot,
  * in terms of its environment (sudoku rules). */
 bool is_allowed(int v, int r, int c) {
+    Cell *subset[ROW_LEN];
     if (cells[r][c].is_constant) {
         OUTPUT_MSG("Cell at (%d, %d) is constant (%d)", r, c, v);
         return false;
     }
-    Cell *subset[ROW_LEN] = {0};
     get_row(subset, r);
     if (is_in_subset(v, subset, false)) {
         OUTPUT_MSG("Found %d in row %d\n", v, r);
