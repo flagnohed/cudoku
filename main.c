@@ -249,7 +249,7 @@ int main(int argc, char **argv) {
                 print_usage("Found number flag without number.");
                 exit(EXIT_FAILURE);
             }
-            if (sscanf(argv[i++], "%d", &sudoku_number) != 1) {
+            if (sscanf(argv[++i], "%d", &sudoku_number) != 1) {
                 print_usage("Failed to parse sudoku number.");
                 exit(EXIT_FAILURE);
             }
