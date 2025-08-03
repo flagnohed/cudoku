@@ -1,5 +1,5 @@
 CFLAGS = -g -O2
-CFLAGS += -std=gnu99 -Wpedantic -pedantic-errors
+CFLAGS += -std=c99 -Wpedantic -pedantic-errors
 CFLAGS += -Werror
 CFLAGS += -Wall
 CFLAGS += -Wextra

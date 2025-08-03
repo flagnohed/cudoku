@@ -29,6 +29,7 @@
 #define NUM_SUDOKUS_MEDIUM 352643
 #define NUM_SUDOKUS_HARD   321592
 
+#define BUF_SIZE 256
 typedef enum {
     DIR_UP,
     DIR_DOWN,
@@ -147,9 +148,7 @@ static void draw_sudoku(void) {
 /* Reads a grid from file FNAME. */
 static void read_grid(const char *fname, const int sudoku_number) {
     FILE *fp;
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
+    char *line = NULL, linebuf[BUF_SIZE];
     int v = 0, r = 0, c = 0, row = 1;
 
     fp = fopen(fname, "r");
@@ -157,20 +156,16 @@ static void read_grid(const char *fname, const int sudoku_number) {
         printf("Could not open %s.\n", fname);
         exit(EXIT_FAILURE);
     }
-    while ((read = getline(&line, &len, fp)) != -1) {
+    while (fgets(linebuf, BUF_SIZE, fp) != NULL) {
         /* Read until we find the correct line in fp. */
         if (row == sudoku_number) { break; }
         row++;
-    }
-    if (read == -1) {
-        printf("Reading %s failed.\n", fname);
-        free(line);
-        exit(EXIT_FAILURE);
     }
     /* Found the row containing the sudoku grid!
      * They are partitioned like this: [HASH] [GRID] [DIFFICULTY],
      * which means we can skip until after the first whitespace
      * and parse until the next whitespace after that. */
+    line = &linebuf[0];
     while (*line != ' ') {
         line++;
     }
