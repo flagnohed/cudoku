@@ -29,7 +29,9 @@
 #define NUM_SUDOKUS_MEDIUM 352643
 #define NUM_SUDOKUS_HARD   321592
 
-#define BUF_SIZE 256
+#define MAX_SIZE_BUF 256
+#define MAX_SIZE_NOTES 35  /* "Notes: " + "x, " * 9 + \0 = 7 + 27 + 1 = 35. */
+
 typedef enum {
     DIR_UP,
     DIR_DOWN,
@@ -43,8 +45,7 @@ Cell answer[ROW_LEN][ROW_LEN] = {0};
 
 /* Output all the notes for the current cell. */
 static void show_notes(int r, int c) {
-    /* "Notes: " + "x, " * 9 + \0 = 7 + 27 + 1 = 35. */
-    char note_str[35], tmp_str[4];
+    char note_str[MAX_SIZE_NOTES], tmp_str[4];
     int note_idx, cur_note;
 
     sprintf(note_str, "Notes: ");
@@ -148,7 +149,7 @@ static void draw_sudoku(void) {
 /* Reads a grid from file FNAME. */
 static void read_grid(const char *fname, const int sudoku_number) {
     FILE *fp;
-    char *line = NULL, linebuf[BUF_SIZE];
+    char *line = NULL, linebuf[MAX_SIZE_BUF];
     int v = 0, r = 0, c = 0, row = 1;
 
     fp = fopen(fname, "r");
@@ -156,7 +157,7 @@ static void read_grid(const char *fname, const int sudoku_number) {
         printf("Could not open %s.\n", fname);
         exit(EXIT_FAILURE);
     }
-    while (fgets(linebuf, BUF_SIZE, fp) != NULL) {
+    while (fgets(linebuf, MAX_SIZE_BUF, fp) != NULL) {
         /* Read until we find the correct line in fp. */
         if (row == sudoku_number) { break; }
         row++;
