@@ -204,7 +204,7 @@ static void print_usage(const char *context) {
 
 
 int main(int argc, char **argv) {
-    int i, r = 0, c = 0, ch = 0, sudoku_number = 1;
+    int i, r = 0, c = 0, ch = 0, num_solved_cells = 0, sudoku_number = 1;
     bool solver_mode = false, note_mode = false;
     const char *fname = SUDOKUS_EASY;
 
@@ -257,7 +257,7 @@ int main(int argc, char **argv) {
     }
     read_grid (fname, sudoku_number);
     if (solver_mode) {
-        solve();
+        num_solved_cells = solve();
         if (is_complete()) {
             endwin();
             printf("Sudoku %d from %s solved! \n",
@@ -270,14 +270,19 @@ int main(int argc, char **argv) {
     keypad(stdscr, TRUE);  /* F1, F2, arrow keys, ... */
     noecho();              /* Dont echo while we do getch. */
     do {
+        if (solver_mode) {
+            /* We get to here if the solver did not solve everything,
+             * so put the number of cells it DID solve on the screen. */
+            OUTPUT_MSG("Solved %d/%d cells.", num_solved_cells, ROW_LEN*ROW_LEN);
+        }
         cells2screen(&r, &c);
         /* These functions need screen coordinates... */
         draw_sudoku();
         move(r, c);
         /* ...and the rest only cares about grid coordinates! */
         screen2cells(&r, &c);
+
         ch = tolower(getch());
-        CLEAR_LINE(MSG_POS + 1);
         switch(ch) {
             case '1':
             case '2':

@@ -88,9 +88,9 @@ static void solve_cell(int v, int r, int c) {
 }
 
 
-/* Main solver function.  */
-void solve(void) {
-    int r, c, v = 0;
+/* Main solver function. Returns the number of solved cells. */
+int solve(void) {
+    int r, c, v = 0, num_solved_cells = 0;
     for (r = 0; r < ROW_LEN; r++) {
         for (c = 0; c < ROW_LEN; c++) {
             note_possible_values(r, c);
@@ -101,8 +101,9 @@ void solve(void) {
                  * to reiterate the entire grid to see if removing lingering notes
                  * revealed some other cell that can now be solved. */
                 solve_cell(v, r, c);
-                solve();
+                num_solved_cells += 1 + solve();
             }
         }
     }
+    return num_solved_cells;
 }
