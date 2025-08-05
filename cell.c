@@ -71,11 +71,13 @@ void set_value(int v, int r, int c, bool note) {
  */
 void get_box(Cell *box[ROW_LEN], int r, int c) {
     /* Figure out where the start of the current box is. */
-    int start_r = r - r % 3, start_c = c - c % 3, count = 0, i, j;
-    for (i = start_r; i < start_r + 3; i++) {
-        for (j = start_c; j < start_c + 3; j++) {
-            box[count] = &cells[i][j];
-            count++;
+    int start_r = r - r % BOX_LEN;
+    int start_c = c - c % BOX_LEN;
+    int i, j, subset_idx;
+    for (i = start_r; i < start_r + BOX_LEN; i++) {
+        for (j = start_c; j < start_c + BOX_LEN; j++) {
+            subset_idx = (i - start_r) * BOX_LEN + (j - start_c);
+            box[subset_idx] = &cells[i][j];
         }
     }
 }
