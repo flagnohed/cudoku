@@ -34,6 +34,8 @@
 
 typedef struct {
     int value;
+    int r;
+    int c;
     bool is_constant;   /* True if cell not hidden at the start. */
     int notes[ROW_LEN];
 }   Cell;

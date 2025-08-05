@@ -174,11 +174,11 @@ static void read_grid(const char *fname, const int sudoku_number) {
      * parsing the sudoku grid. */
     line++;
     while (*line != ' ') {
-        // values[count] = *line - '0';
-        // printf("%d %d \n", count, r);
         Cell cell;
         v = *line - '0';
         cell.value = v;
+        cell.r = r;
+        cell.c = c;
         cell.is_constant = (bool) v;
         cells[r][c] = cell;
         /* @todo: figure out why modulo doesn't work here. */
