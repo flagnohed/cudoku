@@ -32,9 +32,9 @@ void write_cell(int v, int r, int c, bool note) {
         /* Reentering the already existing value
            is interpreted as erasing. */
         v = 0;
-        OUTPUT_MSG("Cell value already there, erasing instead.")
     }
     else if (!is_allowed(v, r, c)) {
+        /* is_allowed() handles "error" message, so just return. */
         return;
     }
     set_value(v, r, c, note);
@@ -52,8 +52,8 @@ void set_value(int v, int r, int c, bool note) {
         cell->notes[v - 1] = (cell->notes[v - 1] ? 0 : v);
         return;
     }
-    /* Erasing by reentering value is handled earlier in the call chain. */
     if (!(cell->value = v)) {
+        /* Erasing by reentering value is handled earlier in the call chain. */
         return;
     }
     /* If we are not erasing, i.e., we are adding a value != 0 to the cell,
@@ -144,6 +144,7 @@ bool is_allowed(int v, int r, int c) {
     return true;
 }
 
+
 static bool is_subset_solved(Cell *subset[ROW_LEN]) {
     int i, cur_idx;
     int seen_values[ROW_LEN] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -171,6 +172,8 @@ static bool is_subset_solved(Cell *subset[ROW_LEN]) {
     return true;
 }
 
+
+/* Returns true if every row and every column is solved. */
 bool is_complete() {
     int i;
     Cell *subset[ROW_LEN];
